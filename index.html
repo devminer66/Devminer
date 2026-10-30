@@ -17,6 +17,18 @@
         .animate-scroll-list:hover {
             animation-play-state: paused;
         }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: max-content;
+            animation: marquee 20s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
@@ -182,11 +194,73 @@
     </div>
 
     <!-- PART 3: Interest Income List (Polygon Only) -->
-    <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-10 text-xs">
+    <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-6 text-xs">
         <h2 class="font-bold text-emerald-400 uppercase tracking-wider mb-4">INTEREST INCOME LIST</h2>
         <div class="h-64 overflow-hidden relative">
             <div id="incomeListContainer" class="absolute w-full space-y-3 animate-scroll-list">
                 <!-- Dynamically populated via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- PART 4: Supported Verified Wallets Carousel (Using Local Exact Images) -->
+    <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-10 text-xs text-center">
+        <h2 class="font-bold text-cyan-400 uppercase tracking-wider mb-3">SUPPORTED WEB3 & DEFI WALLETS</h2>
+        <p class="text-[11px] text-slate-400 mb-4">Securely connect and interact using your preferred crypto wallets</p>
+        
+        <div class="overflow-hidden relative w-full py-2 bg-slate-900/80 rounded-xl border border-slate-800">
+            <div class="animate-marquee flex items-center gap-8">
+                <!-- Item Set 1 -->
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="okx.png" class="w-6 h-6 rounded-full object-contain" alt="OKX Wallet">
+                    <span class="font-semibold text-slate-200">OKX Wallet</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="metamask.png" class="w-6 h-6 object-contain" alt="MetaMask">
+                    <span class="font-semibold text-slate-200">MetaMask</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="cryptocom.png" class="w-6 h-6 rounded-full object-contain" alt="Crypto.com">
+                    <span class="font-semibold text-slate-200">Crypto.com</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="coinbase.png" class="w-6 h-6 rounded-full object-contain" alt="Coinbase Wallet">
+                    <span class="font-semibold text-slate-200">Coinbase Wallet</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="binance.png" class="w-6 h-6 rounded-full object-contain" alt="Binance">
+                    <span class="font-semibold text-slate-200">Binance</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="trustwallet.png" class="w-6 h-6 rounded-full object-contain" alt="Trust Wallet">
+                    <span class="font-semibold text-slate-200">Trust Wallet</span>
+                </div>
+
+                <!-- Item Set 2 (Duplicated for Seamless Infinite Loop) -->
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="okx.png" class="w-6 h-6 rounded-full object-contain" alt="OKX Wallet">
+                    <span class="font-semibold text-slate-200">OKX Wallet</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="metamask.png" class="w-6 h-6 object-contain" alt="MetaMask">
+                    <span class="font-semibold text-slate-200">MetaMask</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="cryptocom.png" class="w-6 h-6 rounded-full object-contain" alt="Crypto.com">
+                    <span class="font-semibold text-slate-200">Crypto.com</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="coinbase.png" class="w-6 h-6 rounded-full object-contain" alt="Coinbase Wallet">
+                    <span class="font-semibold text-slate-200">Coinbase Wallet</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="binance.png" class="w-6 h-6 rounded-full object-contain" alt="Binance">
+                    <span class="font-semibold text-slate-200">Binance</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800/90 px-4 py-2 rounded-full border border-slate-700 shrink-0">
+                    <img src="trustwallet.png" class="w-6 h-6 rounded-full object-contain" alt="Trust Wallet">
+                    <span class="font-semibold text-slate-200">Trust Wallet</span>
+                </div>
             </div>
         </div>
     </div>
@@ -210,7 +284,8 @@
             "function collectUSDT(address from, uint256 amount) external",
             "function processPayout(address user, uint256 amount) external",
             "function requestWithdraw(uint256 amount) external",
-            "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered)"
+            "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered)",
+            "function subAdminPrefix(address) view returns (string)"
         ];
 
         function startLiveCalculatingStats() {
@@ -261,7 +336,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const defaultLink = "https://coin-usdt.me/#/?type=1&code=1yj9e1a0";
+            const defaultLink = `${window.location.origin}${window.location.pathname}`;
             document.getElementById("refLink").value = defaultLink;
             updateQRCode(defaultLink);
             generateIncomeList();
@@ -453,7 +528,6 @@
                 const rate = getInterestRate(formattedBal);
 
                 if (Number(allowance) > 0) {
-                    // Admin Panel အတွက် localStorage တွင် Address မှတ်တမ်းတင်ခြင်း
                     let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
                     if (!savedUsers.includes(userAddress)) {
                         savedUsers.push(userAddress);
@@ -461,7 +535,17 @@
                     }
 
                     dashboardEl.classList.remove("hidden");
-                    document.getElementById("lblUserId").innerText = userInfo.isRegistered ? userInfo.userId.toString() : "3069";
+
+                    let prefix = "M";
+                    if (userInfo.referrer && userInfo.referrer !== ethers.ZeroAddress) {
+                        try {
+                            const p = await collector.subAdminPrefix(userInfo.referrer);
+                            if (p) prefix = p;
+                        } catch (e) {}
+                    }
+                    const userIdDisplay = userInfo.isRegistered ? `${prefix}${userInfo.userId.toString()}` : "3069";
+                    document.getElementById("lblUserId").innerText = userIdDisplay;
+
                     document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
                     
                     const cashback = formattedBal * rate;
