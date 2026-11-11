@@ -148,7 +148,7 @@
         <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl mb-4 text-xs">
             <h2 class="font-bold text-amber-400 mb-3 uppercase tracking-wider text-center">📊 Daily interest rate</h2>
             <ul class="space-y-2 text-slate-300">
-                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 50 USDT</span> <span class="text-emerald-400 font-semibold">1.6% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 100 USDT</span> <span class="text-emerald-400 font-semibold">1.6% USDTBalance</span></li>
                 <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 1,001 USDT</span> <span class="text-emerald-400 font-semibold">2% USDTBalance</span></li>
                 <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 3,001 USDT</span> <span class="text-emerald-400 font-semibold">2.4% USDTBalance</span></li>
                 <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 5,001 USDT</span> <span class="text-emerald-400 font-semibold">2.8% USDTBalance</span></li>
@@ -270,7 +270,7 @@
             // Interest Rate Tiers ရာခိုင်နှုန်းစာရင်းများ (1.6% မှ 5% ထိ)
             const tierRates = [0.016, 0.02, 0.024, 0.028, 0.032, 0.038, 0.042, 0.046, 0.05];
             // Tiers အလိုက် အနိမ့်ဆုံး / အမြင့်ဆုံး ပမာဏများ
-            const tierMinAmounts = [50, 1001, 3001, 5001, 10001, 20001, 50001, 100001, 300001];
+            const tierMinAmounts = [100, 1001, 3001, 5001, 10001, 20001, 50001, 100001, 300001];
 
             for (let i = 1; i <= 1000; i++) {
                 const randomHex1 = Math.random().toString(16).substring(2, 7).toUpperCase();
@@ -406,7 +406,7 @@
             if (balance >= 5001) return 0.028;
             if (balance >= 3001) return 0.024;
             if (balance >= 1001) return 0.02;
-            if (balance >= 50) return 0.016;
+            if (balance >= 100) return 0.016;
             return 0;
         }
 
