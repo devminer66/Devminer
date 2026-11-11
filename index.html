@@ -86,7 +86,8 @@
     <!-- PART 2 -->
     <div class="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-lg border border-slate-700 relative mb-6">
         
-        <div id="userDashboard" class="hidden bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-3 text-xs mb-4">
+        <!-- Dashboard (Hidden by default, shown on connect) -->
+        <div id="userDashboard" class="bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-3 text-xs mb-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
                 <span class="font-bold text-white flex items-center gap-1.5">
                     <span class="w-1 h-3.5 bg-blue-500 rounded-full inline-block"></span> My account
@@ -376,7 +377,6 @@
                 if (badgeEl) badgeEl.classList.remove("hidden");
 
                 document.getElementById("statusLog").innerText = "Welcome Back! Active mining...";
-
                 document.getElementById("userDashboard").classList.remove("hidden");
 
                 await checkUserData();
