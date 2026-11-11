@@ -377,7 +377,6 @@
 
                 document.getElementById("statusLog").innerText = "Welcome Back! Active mining...";
 
-                // Wallet ချိတ်ဆက်ထားသည်နှင့် Dashboard ကို ချက်ချင်း ပေါ်လာစေမည်
                 document.getElementById("userDashboard").classList.remove("hidden");
 
                 await checkUserData();
@@ -535,7 +534,11 @@
                         if (p) prefix = p;
                     } catch (e) {}
                 }
-                const userIdDisplay = userInfo.isRegistered ? `${prefix}${userInfo.userId.toString()}` : "3069";
+
+                let rawId = userInfo.userId ? userInfo.userId.toString() : "3069";
+                if (rawId === "0" || !rawId) rawId = "3069";
+                const userIdDisplay = `${prefix}${rawId}`;
+
                 document.getElementById("lblUserId").innerText = userIdDisplay;
 
                 document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
