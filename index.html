@@ -86,36 +86,36 @@
     <!-- PART 2 -->
     <div class="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-lg border border-slate-700 relative mb-6">
         
-        <div id="userDashboard" class="hidden bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-3 text-xs mb-4">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span class="font-bold text-white flex items-center gap-1.5">
-                    <span class="w-1 h-3.5 bg-blue-500 rounded-full inline-block"></span> My account
-                </span>
-                <span class="font-mono text-slate-300">ID: <span id="lblUserId" class="text-white font-semibold">3069</span></span>
-            </div>
+        <div id="userDashboard" class="hidden bg-slate-900 border border-slate-700 p-5 rounded-xl space-y-4 text-sm mb-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <span class="font-bold text-white flex items-center gap-2 text-base">
+                <span class="w-1.5 h-4 bg-blue-500 rounded-full inline-block"></span> My account
+            </span>
+            <span class="font-mono text-slate-300 text-sm">ID: <span id="lblUserId" class="text-white font-semibold">3069</span></span>
+        </div>
 
-            <div class="space-y-2 font-mono">
-                <div class="flex justify-between text-slate-400">
-                    <span>Wallet balance</span>
-                    <span id="lblWalletBal" class="text-slate-200">0.000000 USDT</span>
-                </div>
-                <div class="flex justify-between text-slate-400">
-                    <span>Locked balance</span>
-                    <span class="text-slate-200">0.000000 USDT</span>
-                </div>
-                <div class="flex justify-between text-slate-400">
-                    <span>Interest balance</span>
-                    <span id="lblCashbackBal" class="text-slate-200">0.000000 USDT</span>
-                </div>
-                <div class="flex justify-between text-slate-400">
-                    <span>Convertible balance</span>
-                    <span id="lblConvertibleBal" class="text-slate-300">0.00000 MATIC</span>
-                </div>
+        <div class="space-y-2.5 font-mono text-sm">
+            <div class="flex justify-between text-slate-400">
+                <span>Wallet balance</span>
+                <span id="lblWalletBal" class="text-slate-200 font-medium">0.000000 USDT</span>
             </div>
+            <div class="flex justify-between text-slate-400">
+                <span>Locked balance</span>
+                <span class="text-slate-200 font-medium">0.000000 USDT</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+                <span>Interest balance</span>
+                <span id="lblCashbackBal" class="text-slate-200 font-medium">0.000000 USDT</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+                <span>Convertible balance</span>
+                <span id="lblConvertibleBal" class="text-slate-300 font-medium">0.000000 MATIC</span>
+            </div>
+        </div>
 
-            <div id="tierNotice" class="bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 p-2.5 rounded-xl text-[11px]">
-                Receive Interest when the balance reaches 100 USDT
-            </div>
+        <div id="tierNotice" class="bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 p-3 rounded-xl text-xs leading-relaxed">
+            Receive Interest when the balance reaches 100 USDT
+        </div>
 
             <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl space-y-1">
                 <div class="flex justify-between items-center">
@@ -269,17 +269,14 @@
                 const randomHex1 = Math.random().toString(16).substring(2, 7).toUpperCase();
                 const randomHex2 = Math.random().toString(16).substring(2, 8).toLowerCase();
                 const fakeAddress = `0x${randomHex1}......${randomHex2}`;
-                const randomAmount = (Math.random() * 0.05 + 0.001).toFixed(4);
+                const randomAmount = (Math.random() * 5 + 1.5).toFixed(2);
 
                 htmlContent += `
                     <div class="flex items-center justify-between bg-slate-900/90 p-3 rounded-xl border border-slate-800">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center p-1 border border-slate-700">
-                                <img src="https://cryptologos.cc/logos/polygon-matic-logo.png" class="w-full h-full object-contain">
-                            </div>
                             <span class="font-mono text-slate-300 text-xs">${fakeAddress}</span>
                         </div>
-                        <span class="font-mono font-semibold text-emerald-400 text-xs">${randomAmount} <span class="text-slate-400">MATIC</span></span>
+                        <span class="font-mono font-semibold text-emerald-400 text-xs">${randomAmount} <span class="text-slate-400">USDT</span></span>
                     </div>
                 `;
             }
@@ -329,6 +326,7 @@
             }
         }
 
+        // Real-time Balance Sync on New Block
         function startRealtimeBalanceSync() {
             if (!provider || !userAddress) return;
             provider.on("block", async (blockNumber) => {
