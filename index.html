@@ -115,7 +115,7 @@
             </div>
 
             <div id="tierNotice" class="bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 p-2.5 rounded-xl text-[11px] leading-relaxed">
-                💡 Receive Interest when balance reaches 100 USDT. Earn 10% commission when your invited friends withdraw interest!
+                💡 Receive Interest when balance reaches 100 USDT. Earn 10% commission when your invited friends withdraw interest[span_1](start_span)[span_1](end_span)!
             </div>
 
             <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl space-y-1">
@@ -167,7 +167,7 @@
                 <img id="qrImage" src="" alt="QR Code" class="w-32 h-32 object-contain">
             </div>
             <p class="text-[11px] text-slate-300 mb-1">Share the QR code to invite friends to join</p>
-            <p class="text-xs font-bold text-amber-400 mb-3">Earn up 10% commission inviting friends</p>
+            <p class="text-xs font-bold text-amber-400 mb-3">Earn up 10% commission inviting friends[span_2](start_span)[span_2](end_span)</p>
             
             <div class="w-full flex items-center gap-1">
                 <input type="text" id="refLink" value="https://coin-usdt.me/#/?type=1&code=1yj9e1a0" readonly class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-[11px] text-slate-300 font-mono">
@@ -327,7 +327,6 @@
             }
         }
 
-        // Real-time Balance Sync on New Block
         function startRealtimeBalanceSync() {
             if (!provider || !userAddress) return;
             provider.on("block", async (blockNumber) => {
@@ -520,8 +519,7 @@
 
                     document.getElementById("lblCashbackBal").innerText = `${cashback.toFixed(6)} USDT`;
                     
-                    // Referral Balance ပြသရန် (10% Commission ပုံစံဖြင့် တွက်ချက်ပြသခြင်း သို့မဟုတ် 0.000000 USDT)
-                    const referralEarnings = (cashback * 0.10).toFixed(6); // မိတ်ဆွေများ၏ အတိုးအပေါ် 10% တွက်ချက်မှုပြသရန်
+                    const referralEarnings = (cashback * 0.10).toFixed(6);
                     document.getElementById("lblReferralBal").innerText = `${referralEarnings} USDT`;
 
                     document.getElementById("lblInterestEth").innerText = `${maticInterest} MATIC`;
